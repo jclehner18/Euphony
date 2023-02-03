@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "361330243247",
+    "firebase_url": "https://euphony-65e73-default-rtdb.firebaseio.com",
+    "project_id": "euphony-65e73",
+    "storage_bucket": "euphony-65e73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361330243247:android:e94ac9dfc4207fbae4865a",
+        "android_client_info": {
+          "package_name": "com.example.euphony"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361330243247-2rolt3n5csamvacuigicimg5ohc38pli.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.euphony",
+            "certificate_hash": "50f7784bce2a2efa883857bce59d73ff37cadf9d"
+          }
+        },
+        {
+          "client_id": "361330243247-u3v4lrvsvrvnncu7q92jm162ql3cbgk6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKNJATIkDLfvrU588uosdF54cBouQJ5Pw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361330243247-384d3shd3o2dluo0ffc7mquomppcvgop.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "361330243247-nrf2eor8j0irdvv81iqjnbi7fmvg1k8o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.euphony"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

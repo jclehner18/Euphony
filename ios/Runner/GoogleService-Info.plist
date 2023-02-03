@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>361330243247-nrf2eor8j0irdvv81iqjnbi7fmvg1k8o.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.361330243247-nrf2eor8j0irdvv81iqjnbi7fmvg1k8o</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDq6jrmOUta_wUKh_lsMESZ3fSRwCBccSU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>361330243247</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.euphony</string>
+	<key>PROJECT_ID</key>
+	<string>euphony-65e73</string>
+	<key>STORAGE_BUCKET</key>
+	<string>euphony-65e73.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:361330243247:ios:efe2d58fe1523b46e4865a</string>
+	<key>DATABASE_URL</key>
+	<string>https://euphony-65e73-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
