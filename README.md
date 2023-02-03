@@ -1,6 +1,6 @@
-# euphony
+# Euphony
 
-A new Flutter project.
+A communication software that allows group messaging, private messaging, voice chats, screen sharing, pinned messages, and calendar events.
 
 ## Getting Started
 
