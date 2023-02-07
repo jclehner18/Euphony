@@ -2,6 +2,7 @@ import 'package:euphony/MainView.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:path/path.dart';
 
@@ -115,7 +116,27 @@ class _SignUpState extends State<SignUp> {
                         signInSignUpButton(context, false, () {
 
                           FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailTextController.text, 
-                            password: _passwordTextController.text).then((value) => {
+                            password: _passwordTextController.text). catchError((err) {
+                              
+                              showDialog(
+                                context: context, 
+                                builder: (BuildContext context) {
+                                  return AlertDialog(  
+                                    title: Text("Error"),
+                                    content: Text("Email is already in use or entered improperly. Also check your password. It needs to be at least 6 characters."),
+                                    actions: [
+                                      FloatingActionButton(
+                                        child: Text("Ok"),
+                                        backgroundColor: Colors.grey,                   
+                                        onPressed: () {
+                                        Navigator.of(context).pop();
+                                      })
+                                    ],
+                                  );
+                                });
+                            })
+                            
+                            .then((value) => {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => MainView())),
                             }).onError((error, stackTrace) => {
                               //print("Error ${error.toString()}"),
