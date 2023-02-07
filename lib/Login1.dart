@@ -4,6 +4,7 @@ import 'package:euphony/SignUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'services/firebase_services.dart';
@@ -146,9 +147,14 @@ class LoginPage extends StatelessWidget {
                       ),
                       child: FloatingActionButton.extended(
                         onPressed: () async {
+                          GoogleSignIn().signIn();
                           await FirebaseService().signInWithGoogle();
                           Navigator.push(context, MaterialPageRoute(builder: (context) => MainView()));
                         },
+                        // async {
+                        //   await FirebaseService().signInWithGoogle();
+                        //   Navigator.push(context, MaterialPageRoute(builder: (context) => MainView()));
+                        // },
                         label: Text('Login using Google'),
                         backgroundColor: Colors.transparent,
                         icon: Icon(FontAwesomeIcons.google),
