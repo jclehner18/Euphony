@@ -62,3 +62,80 @@ Container signInSignUpButton(
         ),
       );
   }
+
+
+class MessageCard extends StatelessWidget {
+  static const SampleMessageSenderProfile = Image(image: NetworkImage("https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg"));
+  static const SampleMessageSender = "Sample User";
+  static const SampleMessageTimestamp = "12:03";
+  static const SampleMessage = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+  const MessageCard({super.key,
+    this.MessageBody = SampleMessage,
+    this.MessageSender = SampleMessageSender,
+    this.MessageSenderProfile = SampleMessageSenderProfile,
+    this.MessageTimestamp = MessageCard.SampleMessageTimestamp
+  });
+
+  final String MessageSender;
+  final Image MessageSenderProfile;
+  final String MessageTimestamp;
+  final String MessageBody;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Theme.of(context).primaryColorLight,
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(2),
+              child: SizedBox(
+                height: 32,
+                width: 32,
+                child: MessageSenderProfile,
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        MessageSender,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+
+                        )
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        MessageTimestamp,
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w100,
+                          color: Colors.grey
+                        )
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(MessageBody)
+                      )
+                    ],
+                  )
+                ],
+              )
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
