@@ -92,7 +92,12 @@ class MessageCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.only(
+                top: 2,
+                bottom: 2,
+                left: 2,
+                right: 16
+              ),
               child: SizedBox(
                 height: 32,
                 width: 32,
@@ -136,6 +141,58 @@ class MessageCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+class GroupMemberCard extends StatelessWidget {
+  static const _SampleMemberName = "Sample Member";
+  static const _SampleMemberProfile = NetworkImage("https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg");
+
+  const GroupMemberCard ({super.key, this.memberName = _SampleMemberName, this.memberProfile = _SampleMemberProfile});
+
+  final String memberName;
+  final dynamic memberProfile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Row(
+        children: [
+          SizedBox(
+            height: 32,
+            width: 32,
+            child: Image(
+              image: memberProfile
+            ),
+          ),
+          Text(memberName)
+        ],
+      ),
+    );
+  }
+}
+
+
+class ChannelCard extends StatelessWidget {
+  static const _SampleChannelIcon = Icons.message;
+  static const _SampleChannelName = "Default Channel Name";
+
+  const ChannelCard({super.key, this.channelName = _SampleChannelName, this.channelIcon = _SampleChannelIcon});
+
+  final String channelName;
+  final IconData channelIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Row(
+        children: [
+          Icon(channelIcon),
+          Text(channelName)
+        ]
+      )
     );
   }
 }

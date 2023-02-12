@@ -150,10 +150,22 @@ class _GroupPaneState extends State<GroupPane> with SingleTickerProviderStateMix
               controller: _tabController,
               children: [
                 Container(
-                  child: Placeholder()
+                  child: Column(
+                    children: [
+                      ChannelCard(),
+                      ChannelCard(),
+                      ChannelCard()
+                    ]
+                  )
                 ),
                 Container(
-                  child: Placeholder()
+                  child: Column(
+                    children: [
+                      GroupMemberCard(),
+                      GroupMemberCard(),
+                      GroupMemberCard()
+                    ],
+                  )
                 )
               ],
             ),
