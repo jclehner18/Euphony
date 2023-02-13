@@ -1,5 +1,6 @@
 //import 'package:euphony/Login.dart';
 import 'package:euphony/Login1.dart';
+import 'package:euphony/MainView.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -26,7 +27,8 @@ class HomePage extends StatelessWidget {
               ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.white, shape: StadiumBorder(),
               ), child: const Text('Login', style: TextStyle(color: Colors.black, /*fontSize: 30,*/ fontWeight: FontWeight.bold),), 
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
+                  //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainView()));
                 }),
           ])
         ],)
