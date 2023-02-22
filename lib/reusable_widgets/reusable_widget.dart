@@ -175,24 +175,56 @@ class GroupMemberCard extends StatelessWidget {
 }
 
 
-class ChannelCard extends StatelessWidget {
+class ChannelButton extends StatelessWidget {
   static const _SampleChannelIcon = Icons.message;
   static const _SampleChannelName = "Default Channel Name";
 
-  const ChannelCard({super.key, this.channelName = _SampleChannelName, this.channelIcon = _SampleChannelIcon});
+  bool selected = false;
+
+  ChannelButton({
+    super.key,
+    this.channelName = _SampleChannelName,
+    this.channelIcon = _SampleChannelIcon,
+    required this.onClickCallback
+  });
 
   final String channelName;
   final IconData channelIcon;
+  final Function onClickCallback;
+
+
+  late final button = ElevatedButton(
+      onPressed: () {
+        onClickCallback();
+        selected = true;
+      },
+      child: Row(
+          children: [
+            Icon(channelIcon),
+            Text(channelName)
+          ]
+      )
+  );
+
+  void setState() {
+    if (selected) {}
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Row(
-        children: [
-          Icon(channelIcon),
-          Text(channelName)
-        ]
-      )
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: button,
     );
+  }
+}
+
+
+class GroupIconCard extends StatelessWidget {
+  const GroupIconCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Placeholder();
   }
 }

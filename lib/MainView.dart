@@ -4,6 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+
+const int MIN_WIDTH_FOR_WIDE_DISPLAY = 900;
+const int MIN_WIDTH_FOR_MED_DISPLAY = 600;
+
+const int PANE_LIST_LENGTH = 3;
+const int GROUP_LIST_PANE_INDEX = 0;
+const int GROUP_INFO_PANE_INDEX = 1;
+const int CHAT_PANE_INDEX = 2;
+
+
 class MainView extends StatefulWidget {
   const MainView({Key? key}) : super(key: key);
 
@@ -12,13 +22,24 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
+  static int active_group = 0;
+  static int active_channel = 0;
+
+  static const List<Widget> _panes = [
+    GroupListPane(),
+    GroupPane(),
+    ChannelPane()
+  ];
+  int _selectedPane = GROUP_LIST_PANE_INDEX; // This is only used for the narrow view.
+
+
+
+
   @override 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Container(
-          child: Text("Euphony")
-        ),
+        title: const Text("Euphony"),
         actions: [
           ElevatedButton(
             onPressed: () {
@@ -41,21 +62,109 @@ class _MainViewState extends State<MainView> {
           )
         ]
       ),
-      body: Row(
-        children: const [
-          SizedBox(
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          if (constraints.maxWidth > MIN_WIDTH_FOR_WIDE_DISPLAY) {
+            return _wideMainView();
+          } else if (constraints.maxWidth > MIN_WIDTH_FOR_MED_DISPLAY) {
+            return _midWidthMainView();
+          } else {
+            return _narrowMainView();
+          }
+        },
+      )
+    );
+  }
+
+  Widget _wideMainView() {
+    return Row(
+      children: [
+        SizedBox(
             width: 120,
-            child: GroupListPane()
-          ),
-          SizedBox(
+            child: _panes[GROUP_LIST_PANE_INDEX]
+        ),
+        SizedBox(
             width: 320,
-            child: GroupPane()
+            child: _panes[GROUP_INFO_PANE_INDEX]
+        ),
+        Expanded(
+            child: _panes[CHAT_PANE_INDEX]
+        )
+      ],
+    );
+  }
+
+  Widget _midWidthMainView() {
+    var groups = [
+      Row (
+        children: [
+          SizedBox(
+              //width: 120,
+              child: _panes[GROUP_LIST_PANE_INDEX]
           ),
           Expanded(
-            child: ChannelPane()
+              child: _panes[GROUP_INFO_PANE_INDEX]
           )
         ],
-      )
+      ),
+      _panes[CHAT_PANE_INDEX]
+    ];
+    return Column(
+      children: [
+        Expanded(
+          child: groups.elementAt(_selectedPane)
+        ),
+        BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group_work),
+              label: "Groups/Channels"
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble),
+              label: "Content"
+            )
+          ],
+          currentIndex: _selectedPane,
+          onTap: (int index) {
+            setState(() {
+              _selectedPane = index;
+            });
+          }
+        )
+      ]
+    );
+  }
+
+  Widget _narrowMainView() {
+    return Column(
+      children: [
+        Expanded(
+          child: _panes.elementAt(_selectedPane)
+        ),
+        BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group_work),
+              label: "Groups",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.tag),
+              label: "Channels"
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble),
+              label: "Content"
+            )
+          ],
+          currentIndex: _selectedPane,
+          onTap: (int index) {
+            setState(() {
+              _selectedPane = index;
+            });
+          }
+        )
+      ],
     );
   }
 }
@@ -113,6 +222,26 @@ class GroupPane extends StatefulWidget {
 class _GroupPaneState extends State<GroupPane> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  final channels_list = [];
+  int selected_channel = 0;
+
+
+  List<Widget> getChannelsList () {
+    return [
+      ChannelButton(onClickCallback: onClickChannel),
+      ChannelButton(onClickCallback: onClickChannel),
+      ChannelButton(onClickCallback: onClickChannel),
+    ];
+  }
+
+  // Callback function when selecting a channel
+  void onClickChannel() {
+    print("Channel Selected");
+  }
+
+
+  //
+  // Required overridden functions below here
   @override
   void initState() {
     super.initState();
@@ -151,11 +280,7 @@ class _GroupPaneState extends State<GroupPane> with SingleTickerProviderStateMix
               children: [
                 Container(
                   child: Column(
-                    children: [
-                      ChannelCard(),
-                      ChannelCard(),
-                      ChannelCard()
-                    ]
+                    children: getChannelsList()
                   )
                 ),
                 Container(
