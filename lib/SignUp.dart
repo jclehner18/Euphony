@@ -113,7 +113,7 @@ class _SignUpState extends State<SignUp> {
                     SizedBox(height: 20,),
                     Container(
                       child: Column(children: <Widget>[
-                        signInSignUpButton(context, false, () {
+                        FireBaseButton(context, "Sign Up", () {
 
                           FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailTextController.text, 
                             password: _passwordTextController.text). catchError((err) {
