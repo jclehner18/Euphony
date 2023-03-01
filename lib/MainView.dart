@@ -10,6 +10,7 @@ MainView.dart is the main screen users will interact with.
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:euphony/Login1.dart';
+import 'package:euphony/SettingsPage.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
