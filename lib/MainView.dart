@@ -25,6 +25,7 @@ class GroupChannelState extends ChangeNotifier {
 
 
   void select_group(int index) {
+    select_channel(0);
     current_group = index;
     notifyListeners();
   }
