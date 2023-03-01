@@ -1,4 +1,5 @@
 import 'package:euphony/MainView.dart';
+import 'package:euphony/resetPassword.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:euphony/SignUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -52,15 +53,6 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 20,),
-                    // Container(
-                    //   width: 250,
-                    //   child: TextField(
-                    //     decoration: InputDecoration(
-                    //       labelText: 'Email Address',
-                    //       suffixIcon: Icon(FontAwesomeIcons.envelope,
-                    //       size: 17,),
-                    //     ),
-                    //   ),
                     Container(
                       width: 250,
                       child: Column(
@@ -70,17 +62,6 @@ class LoginPage extends StatelessWidget {
                       ),
 
                     ),
-                    // Container(
-                    //   width: 250,
-                    //   child: TextField(
-                    //     obscureText: true,
-                    //     decoration: InputDecoration(
-                    //       labelText: 'Password',
-                    //       suffixIcon: Icon(FontAwesomeIcons.eyeSlash,
-                    //       size: 17,),
-                    //     ),
-                    //   ),
-                    // ),
 
                     Container(
                       width: 250,
@@ -92,23 +73,11 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     
-
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 20, 40, 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text('Forgot Password?',
-                            style: TextStyle(color: Colors.grey[700]
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                    forgotPassword(context),
                     SizedBox(height: 10,),
                     Container(
                         child: Column(children: <Widget>[
-                          signInSignUpButton(context, true, () {
+                          FireBaseButton(context, "Login", () {
                             final newUser = FirebaseAuth.instance.signInWithEmailAndPassword(
                               email: _emailTextController.text, 
                               password: _passwordTextController.text).catchError((err) {
@@ -147,7 +116,7 @@ class LoginPage extends StatelessWidget {
                       ),
                       child: FloatingActionButton.extended(
                         onPressed: () async {
-                          GoogleSignIn().signIn();
+                          //GoogleSignIn().signIn();
                           await FirebaseService().signInWithGoogle();
                           Navigator.push(context, MaterialPageRoute(builder: (context) => MainView()));
                         },
@@ -184,4 +153,20 @@ class LoginPage extends StatelessWidget {
       )
     );
   }
+}
+
+Widget forgotPassword(BuildContext context) {
+  return Container(
+    width: 250,
+    height: 35,
+    alignment: Alignment.bottomRight,
+    child: TextButton(  
+      child: const Text("Forgot Password?",
+      style: TextStyle(color: Colors.grey),
+      textAlign: TextAlign.right,
+      ),
+      onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => resetPassword()));
+      },
+    ),
+  );
 }

@@ -1,4 +1,5 @@
 import 'package:euphony/Login1.dart';
+import 'package:euphony/SettingsPage.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,6 +24,7 @@ class _MainViewState extends State<MainView> {
           ElevatedButton(
             onPressed: () {
               print("Opened Settings");
+              Navigator.push(context, MaterialPageRoute(builder: ((context) => settingsPage())));
             },
             child: const Icon(Icons.settings)
           ),
@@ -152,18 +154,18 @@ class _GroupPaneState extends State<GroupPane> with SingleTickerProviderStateMix
                 Container(
                   child: Column(
                     children: [
-                      ChannelCard(),
-                      ChannelCard(),
-                      ChannelCard()
+                      //ChannelCard(),
+                      //ChannelCard(),
+                      //ChannelCard()
                     ]
                   )
                 ),
                 Container(
                   child: Column(
                     children: [
-                      GroupMemberCard(),
-                      GroupMemberCard(),
-                      GroupMemberCard()
+                      //GroupMemberCard(),
+                      //GroupMemberCard(),
+                      //GroupMemberCard()
                     ],
                   )
                 )
@@ -191,9 +193,9 @@ class _ChannelPaneState extends State<ChannelPane> with SingleTickerProviderStat
   Widget getMessages() {
     return ListView(
       children: [
-        MessageCard(),
-        MessageCard(),
-        MessageCard()
+        //MessageCard(),
+        //MessageCard(),
+        //MessageCard()
       ]
     );
   }
