@@ -64,6 +64,7 @@ Container signInSignUpButton(
   }
 
 
+
 class MessageCard extends StatelessWidget {
   static const SampleMessageSenderProfile = Image(image: NetworkImage("https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg"));
   static const SampleMessageSender = "Sample User";
@@ -121,19 +122,22 @@ class MessageCard extends StatelessWidget {
                         MessageTimestamp,
                         style: TextStyle(
                           fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w100,
+                          fontWeight: FontWeight.w300,
                           color: Colors.grey
                         )
                       )
                     ],
                   ),
                   SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(MessageBody)
-                      )
-                    ],
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                          MessageBody,
+                          style: TextStyle()
+                      ),
+                        ),
+                    ]
                   )
                 ],
               )
