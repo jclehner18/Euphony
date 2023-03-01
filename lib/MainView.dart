@@ -27,6 +27,7 @@ int TWELVE = 12;  // This is kind of a joke. It's only used for taking the hour 
 class GroupChannelState extends ChangeNotifier {
   var current_user = "dsurgenavic";
 
+  var num_groups = 2;
   var current_group = 0;
   var current_channel = 0;
   var group_list = [];
@@ -54,11 +55,11 @@ class GroupChannelState extends ChangeNotifier {
   }
 
   void init_groups_list() {
+    group_list.clear();
     //TODO: fetch groups from database
-    group_list = [
-      "Sample Group 1",
-      "Sample Group 2",
-    ];
+    for (var i = 0; i < num_groups; i++) {
+      group_list.add("Sample Group");
+    }
   }
 
   void init_channel_list() {
@@ -83,12 +84,14 @@ class GroupChannelState extends ChangeNotifier {
   }
 
   void create_group() {
+    num_groups++;
+    group_list.add("New Group");
+    channel_list.add(["Sample Channel"]);
     notifyListeners();
   }
 
   void create_channel() {
-
-    channel_list[current_group].add("New Group");
+    channel_list[current_group].add("New Channel");
     notifyListeners();
   }
 
@@ -152,7 +155,7 @@ class _MainViewState extends State<MainView> {
                     */
                         FirebaseAuth.instance.signOut().then((value) {
                           Navigator.push(context, MaterialPageRoute(builder: ((context) => LoginPage())));
-                        })
+                        });
                       },
                       child: const Icon(Icons.logout_outlined)
                   ),
@@ -178,6 +181,12 @@ class _MainViewState extends State<MainView> {
                               onDestinationSelected: (value) {
                                 appState.select_group(value);
                               },
+                              trailing: ElevatedButton(
+                                onPressed: () {
+                                  appState.create_group();
+                                },
+                                child: Icon(Icons.add)
+                              ),
                             )
                         ),
                         DefaultTabController(
