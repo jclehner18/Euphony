@@ -4,6 +4,7 @@ import 'HomePage.dart';
 import 'package:euphony/Login1.dart';
 import 'Login1.dart';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart';
 
 import 'MainView.dart';
 
@@ -107,17 +108,22 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Euphony',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return ChangeNotifierProvider(
+      create: (context) => GroupChannelState(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Euphony',
+        theme: ThemeData(
+          primarySwatch: Colors.deepPurple,
+        ),
+        home: HomePage(),
+        //home: const MainView(),
       ),
-      //home: HomePage(), 
-      home: const MainView(),
-      );
+    );
   }
 }
 

@@ -34,6 +34,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  provider: ^6.0.0
+
   #google sign in
   firebase_auth:
 
@@ -49,6 +51,7 @@ dependencies:
   font_awesome_flutter: ^10.3.0
   google_sign_in:
   rflutter_alert: ^2.0.4
+  syncfusion_flutter_calendar: ^20.4.52
 
 dev_dependencies:
   flutter_test:
