@@ -152,7 +152,7 @@ class _MainViewState extends State<MainView> {
                     */
                         FirebaseAuth.instance.signOut().then((value) {
                           Navigator.push(context, MaterialPageRoute(builder: ((context) => LoginPage())));
-                        })
+                        });
                       },
                       child: const Icon(Icons.logout_outlined)
                   ),
