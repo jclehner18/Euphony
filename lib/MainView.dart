@@ -120,7 +120,6 @@ class MainView extends StatefulWidget {
   State<MainView> createState() => _MainViewState();
 }
 class _MainViewState extends State<MainView> {
-
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<GroupChannelState>();
@@ -141,6 +140,7 @@ class _MainViewState extends State<MainView> {
                         /*
                     print("Opened Settings Page);
                     */
+                        Navigator.push(context, MaterialPageRoute(builder: ((context) => settingsPage())));
                       },
                       child: const Icon(Icons.settings)
                   ),
@@ -149,6 +149,9 @@ class _MainViewState extends State<MainView> {
                         /*
                     print("Logged Out");
                     */
+                        FirebaseAuth.instance.signOut().then((value) {
+                          Navigator.push(context, MaterialPageRoute(builder: ((context) => LoginPage())));
+                        })
                       },
                       child: const Icon(Icons.logout_outlined)
                   ),
