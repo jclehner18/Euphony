@@ -773,6 +773,7 @@ class _PopupAppointmentEditorState extends State<PopupAppointmentEditor> {
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
+                    fillColor: Theme.of(context).colorScheme.background,
                     onPressed: () {
                       if (widget.selected_appointment != null ||
                           widget.new_appointment != null) {
@@ -3592,6 +3593,7 @@ class _AppointmentEditorState extends State<AppointmentEditor> {
                               Navigator.pop(context);
                             }
                           },
+                          fillColor: Theme.of(context).colorScheme.background,
                           child: const Text(
                             'SAVE',
                             style: TextStyle(
