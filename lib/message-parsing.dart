@@ -26,6 +26,7 @@ getMsgDoc(collect, msg, compare)
   );
 }
 
+//this will grab a new message that has been sent to the database
 grabNewMsg(collect,msg)
 {
   final newMsg = db.collection(collect).doc(msg);
@@ -33,4 +34,19 @@ grabNewMsg(collect,msg)
         (event) => print("current data: ${event.data()}"),
     onError: (error) => print("Listen failed: $error"),
   );
+}
+
+//this is used to send new messages into the database using the current channel collection that we are in
+sendNewMsg(collect, String msg, String uID)
+{
+
+  final newMsg ={
+    "messageBody": msg
+  };
+
+  db
+    .collection(collect)
+    .doc()
+    .set(newMsg)
+    .onError((e, _) => print("Error writing document $e"));
 }
