@@ -13,7 +13,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:euphony/Login1.dart';
 import 'package:euphony/SettingsPage.dart';
@@ -108,8 +107,6 @@ class _MainViewState extends State<MainView> {
   Widget build(BuildContext context) {
     var appState = context.watch<GroupChannelState>();
     appState.init_groups_list();
-    appState.init_channel_list();
-    appState.init_messages();
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
@@ -165,6 +162,7 @@ class _MainViewState extends State<MainView> {
                               onPressed: () {
                                 _onPressNewGroup();
                                 if (_newGroupName != '') appState.create_group(_newGroupName);
+                                _newGroupName = '';
                               },
                               child: Icon(Icons.add)
                             ),
@@ -204,9 +202,7 @@ class _MainViewState extends State<MainView> {
                                       NavigationRail(
                                           extended: wide_display,
                                           destinations: [
-                                            for (var channel in appState
-                                                .channel_list[appState
-                                                .current_group])
+                                            for (var channel in appState.channel_list)
                                               NavigationRailDestination(
                                                   padding: EdgeInsets.all(2),
                                                   icon: Icon(Icons.tag),
@@ -222,6 +218,7 @@ class _MainViewState extends State<MainView> {
                                               onPressed: () {
                                                 _onPressNewChannel();
                                                 if (_newChannelName != '') appState.create_channel(_newChannelName);
+                                                _newChannelName = '';
                                               },
                                               child: Text("New Channel")
                                           )
@@ -229,7 +226,8 @@ class _MainViewState extends State<MainView> {
                                       ListView.builder(
                                         itemCount: 3,
                                         itemBuilder: (context, value) {
-                                          return Placeholder();
+                                          return GroupMemberCard();
+                                          // TODO: Get members from db
                                         },
                                       )
                                     ]
@@ -294,6 +292,7 @@ class _MainViewState extends State<MainView> {
                               onPressed: () {
                                 _onPressNewGroup();
                                 if (_newGroupName != '') appState.create_channel(_newGroupName);
+                                _newGroupName = '';
                               },
                               child: Icon(Icons.add)
                           )
@@ -330,9 +329,7 @@ class _MainViewState extends State<MainView> {
                                     NavigationRail(
                                         extended: true,
                                         destinations: [
-                                          for (var channel in appState
-                                              .channel_list[appState
-                                              .current_group])
+                                          for (var channel in appState.channel_list)
                                             NavigationRailDestination(
                                                 padding: EdgeInsets.all(2),
                                                 icon: Icon(Icons.tag),
@@ -348,6 +345,7 @@ class _MainViewState extends State<MainView> {
                                             onPressed: () {
                                               _onPressNewChannel();
                                               if (_newChannelName != '') appState.create_channel(_newChannelName);
+                                              _newChannelName = '';
                                             },
                                             child: Text("New Channel")
                                         )
@@ -355,7 +353,8 @@ class _MainViewState extends State<MainView> {
                                     ListView.builder(
                                       itemCount: 3,
                                       itemBuilder: (context, value) {
-                                        return Placeholder();
+                                        return GroupMemberCard();
+                                        // TODO: Get members from db
                                       },
                                     )
                                   ]
@@ -459,7 +458,7 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                         children: [
                           Expanded(
                             child: ListView.builder(
-                              itemCount: appState.current_message_list.length,
+                              itemCount: appState.message_list.length,
                               itemBuilder: (BuildContext context, int index) {
                                   return _ContextMenuRegion(
                                     contextMenuBuilder: (context, offset) {
@@ -471,13 +470,14 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                                           ContextMenuButtonItem(
                                             onPressed: () {
                                               appState.toggle_pin(index);
+                                              ContextMenuController.removeAny();
                                             },
-                                            label: appState.current_pinned_list[index] ? "Unpin" : "Pin"
+                                            label: appState.pinned_list[index] ? "Unpin" : "Pin"
                                           )
                                         ],
                                       );
                                     },
-                                    child: appState.current_message_list[index]
+                                    child: appState.message_list[index]
                                   );
                                 }
                             )
@@ -530,9 +530,9 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                     ),
                     Container(
                       child: ListView.builder(
-                        itemCount: appState.current_message_list.length,
+                        itemCount: appState.message_list.length,
                         itemBuilder: (BuildContext context, int index) {
-                          if (!appState.current_pinned_list[index]) return null;
+                          if (!appState.pinned_list[index]) return null;
                           return _ContextMenuRegion(
                               contextMenuBuilder: (context, offset) {
                                 return AdaptiveTextSelectionToolbar.buttonItems(
@@ -543,13 +543,14 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                                     ContextMenuButtonItem(
                                         onPressed: () {
                                           appState.toggle_pin(index);
+                                          ContextMenuController.removeAny();
                                         },
-                                        label: appState.current_pinned_list[index] ? "Unpin" : "Pin"
+                                        label: appState.pinned_list[index] ? "Unpin" : "Pin"
                                     )
                                   ],
                                 );
                               },
-                              child: appState.current_message_list[index]
+                              child: appState.message_list[index]
                           );
                         }
                       ),
@@ -592,22 +593,16 @@ class _ContextMenuRegionState extends State<_ContextMenuRegion> {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return true;
-        break;
       case TargetPlatform.iOS:
         return true;
-        break;
       case TargetPlatform.macOS:
         return false;
-        break;
       case TargetPlatform.fuchsia:
         return false;
-        break;
       case TargetPlatform.linux:
         return false;
-        break;
       case TargetPlatform.windows:
         return false;
-        break;
       default:
         throw UnimplementedError();
     }

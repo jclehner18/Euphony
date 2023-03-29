@@ -19,52 +19,33 @@ class GroupChannelState extends ChangeNotifier {
   var message_list = [];
   var pinned_list = [];
 
-  var current_message_list = [];
-  var current_pinned_list = [];
-
 
   void select_group(int index) {
-    select_channel(0);
     current_group = index;
+    select_channel(0);
+
+    // TODO: Retrieve channels from db. Store them in the channel_list variable.
+
     notifyListeners();
   }
 
   void select_channel(int index) {
-    message_list[current_group][current_channel] = current_message_list;
-    pinned_list[current_group][current_channel] = current_pinned_list;
     current_channel = index;
-    current_message_list = message_list[current_group][current_channel];
-    current_pinned_list = pinned_list[current_group][current_channel];
+
+    // TODO: Retrieve messages from db. Store them in the message_list variable.
+
     notifyListeners();
   }
 
   void init_groups_list() {
     group_list.clear();
+
     //TODO: fetch groups from database
     for (var i = 0; i < num_groups; i++) {
       group_list.add("Sample Group");
     }
-  }
-
-  void init_channel_list() {
-    for (var group in group_list) {
-      channel_list.add([
-        "Sample Channel 1",
-        "Sample Channel 2",
-        "Sample Channel 3"
-      ]);
-    }
-  }
-
-  void init_messages() {
-    for (var i = 0; i < group_list.length; i ++) {
-      message_list.add([]);
-      pinned_list.add([]);
-      for (var j = 0; j < channel_list.length; j++) {
-        message_list[i].add([]);
-        pinned_list[i].add([]);
-      }
-    }
+    channel_list.add("Sample Channel");
+    channel_list.add("Sample Channel");
   }
 
   void create_group(String newGroupName) {
@@ -82,18 +63,20 @@ class GroupChannelState extends ChangeNotifier {
   void send_message(String body) {
     var ts = Timestamp.now().toDate();
     var timestamp = "Today at ${ts.hour % 12}:${ts.minute}";
-    current_message_list.add(
-        MessageCard(
-          MessageSender: current_user,
-          MessageTimestamp: timestamp,
-          MessageBody: body,
-        )
-    );
-    current_pinned_list.add(false);
+
+    // TODO: Remove print
+    print("Message sent:");
+    print("> $current_user");
+    print("> $timestamp");
+    print("> $body");
+
+    // TODO: Connect to db
   }
 
   void toggle_pin(int index) {
-    current_pinned_list[index] = !current_pinned_list[index];
+
+    pinned_list.add(message_list[index]);
+
     notifyListeners();
   }
 
