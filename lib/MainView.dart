@@ -33,6 +33,77 @@ class MainView extends StatefulWidget {
   State<MainView> createState() => _MainViewState();
 }
 class _MainViewState extends State<MainView> {
+  String _newChannelName = '';
+  String _newGroupName = '';
+
+  void _onPressNewChannel() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('New Channel'),
+          content: TextField(
+            autofocus: true,
+            decoration: InputDecoration(hintText: 'Enter channel name'),
+            onChanged: (value) {
+              _newChannelName = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                _newChannelName = '';
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text('Create'),
+              onPressed: () {
+                print(_newChannelName);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _onPressNewGroup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('New Group'),
+          content: TextField(
+            autofocus: true,
+            decoration: InputDecoration(hintText: 'Enter group name'),
+            onChanged: (value) {
+              _newGroupName = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                _newGroupName = '';
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text('Create'),
+              onPressed: () {
+                print(_newGroupName);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<GroupChannelState>();
@@ -74,99 +145,101 @@ class _MainViewState extends State<MainView> {
               children: [
                 SafeArea(
                   child: Row(
-                      children: [
-                        SizedBox(
-                            width: (wide_display ? 100 : 60),
-                            child: NavigationRail(
-                              extended: false,
-                              destinations: [
-                                for (var group in appState.group_list)
-                                  NavigationRailDestination(
-                                      icon: Icon(Icons.group_work),
-                                      label: Text(group)
-                                  )
-                              ],
-                              selectedIndex: appState.current_group,
-                              onDestinationSelected: (value) {
-                                appState.select_group(value);
+                    children: [
+                      SizedBox(
+                          width: (wide_display ? 100 : 60),
+                          child: NavigationRail(
+                            extended: false,
+                            destinations: [
+                              for (var group in appState.group_list)
+                                NavigationRailDestination(
+                                    icon: Icon(Icons.group_work),
+                                    label: Text(group)
+                                )
+                            ],
+                            selectedIndex: appState.current_group,
+                            onDestinationSelected: (value) {
+                              appState.select_group(value);
+                            },
+                            trailing: ElevatedButton(
+                              onPressed: () {
+                                _onPressNewGroup();
+                                if (_newGroupName != '') appState.create_group(_newGroupName);
                               },
-                              trailing: ElevatedButton(
-                                onPressed: () {
-                                  appState.create_group();
-                                },
-                                child: Icon(Icons.add)
-                              ),
-                            )
-                        ),
-                        DefaultTabController(
-                          length: 2,
-                          child: SizedBox(
-                            width: (wide_display ? 220 : 90),
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: (wide_display ? null : 50),
-                                  child: TabBar(
-                                      labelColor: Theme
-                                          .of(context)
-                                          .focusColor,
-                                      tabs: [
-                                        Tab(
-                                            icon: Icon(Icons.list),
-                                            text: (wide_display
-                                                ? "Channels"
-                                                : null)
-                                        ),
-                                        Tab(
-                                            icon: Icon(Icons.people),
-                                            text: (wide_display
-                                                ? "Members"
-                                                : null)
-                                        )
-                                      ]
-                                  ),
-                                ),
-                                Expanded(
-                                  child: TabBarView(
-                                      children: [
-                                        NavigationRail(
-                                            extended: wide_display,
-                                            destinations: [
-                                              for (var channel in appState
-                                                  .channel_list[appState
-                                                  .current_group])
-                                                NavigationRailDestination(
-                                                    padding: EdgeInsets.all(2),
-                                                    icon: Icon(Icons.tag),
-                                                    label: Text(channel)
-                                                )
-                                            ],
-                                            selectedIndex: appState
-                                                .current_channel,
-                                            onDestinationSelected: (value) {
-                                              appState.select_channel(value);
-                                            },
-                                            trailing: ElevatedButton(
-                                                onPressed: () {
-                                                  appState.create_channel();
-                                                },
-                                                child: Text("New Channel")
-                                            )
-                                        ),
-                                        ListView.builder(
-                                          itemCount: 3,
-                                          itemBuilder: (context, value) {
-                                            return Placeholder();
-                                          },
-                                        )
-                                      ]
-                                  ),
-                                ),
-                              ],
+                              child: Icon(Icons.add)
                             ),
+                          )
+                      ),
+                      DefaultTabController(
+                        length: 2,
+                        child: SizedBox(
+                          width: (wide_display ? 220 : 90),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: (wide_display ? null : 50),
+                                child: TabBar(
+                                    labelColor: Theme
+                                        .of(context)
+                                        .focusColor,
+                                    tabs: [
+                                      Tab(
+                                          icon: Icon(Icons.list),
+                                          text: (wide_display
+                                              ? "Channels"
+                                              : null)
+                                      ),
+                                      Tab(
+                                          icon: Icon(Icons.people),
+                                          text: (wide_display
+                                              ? "Members"
+                                              : null)
+                                      )
+                                    ]
+                                ),
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                    children: [
+                                      NavigationRail(
+                                          extended: wide_display,
+                                          destinations: [
+                                            for (var channel in appState
+                                                .channel_list[appState
+                                                .current_group])
+                                              NavigationRailDestination(
+                                                  padding: EdgeInsets.all(2),
+                                                  icon: Icon(Icons.tag),
+                                                  label: Text(channel)
+                                              )
+                                          ],
+                                          selectedIndex: appState
+                                              .current_channel,
+                                          onDestinationSelected: (value) {
+                                            appState.select_channel(value);
+                                          },
+                                          trailing: ElevatedButton(
+                                              onPressed: () {
+                                                _onPressNewChannel();
+                                                if (_newChannelName != '') appState.create_channel(_newChannelName);
+                                              },
+                                              child: Text("New Channel")
+                                          )
+                                      ),
+                                      ListView.builder(
+                                        itemCount: 3,
+                                        itemBuilder: (context, value) {
+                                          return Placeholder();
+                                        },
+                                      )
+                                    ]
+                                ),
+                              ),
+                            ],
                           ),
-                        )
-                      ]
+                        ),
+                      )
+                    ]
                   ),
                 ),
                 Expanded(
@@ -217,6 +290,13 @@ class _MainViewState extends State<MainView> {
                           onDestinationSelected: (value) {
                             appState.select_group(value);
                           },
+                          trailing: ElevatedButton(
+                              onPressed: () {
+                                _onPressNewGroup();
+                                if (_newGroupName != '') appState.create_channel(_newGroupName);
+                              },
+                              child: Icon(Icons.add)
+                          )
                         )
                     ),
                     DefaultTabController(
@@ -266,25 +346,8 @@ class _MainViewState extends State<MainView> {
                                         },
                                         trailing: ElevatedButton(
                                             onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return WillPopScope(
-                                                    child: Center(
-                                                      child: Container(
-                                                        alignment: Alignment.center,
-                                                          child: Card(
-                                                            child: PopupNamePrompt(_NewPopupType.CHANNEL)
-                                                          ),
-                                                      )
-                                                    ),
-                                                    onWillPop: () async {
-                                                      return true;
-                                                    }
-                                                  );
-                                                }
-                                              );
-                                              appState.create_channel();
+                                              _onPressNewChannel();
+                                              if (_newChannelName != '') appState.create_channel(_newChannelName);
                                             },
                                             child: Text("New Channel")
                                         )
@@ -502,95 +565,6 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
   }
 }
 
-
-/// This class is a simple popup that prompts the user for a single string.
-/// This prompt is shown when creating a new channel and creating a new group.
-class PopupNamePrompt extends StatefulWidget {
-  PopupNamePrompt(this.type);
-
-  late _NewPopupType type;
-
-  @override
-  _PopupNamePromptState createState() => _PopupNamePromptState();
-}
-class _PopupNamePromptState extends State<PopupNamePrompt> {
-
-  String _subject = '';
-  late String _popup_type = widget.type == _NewPopupType.GROUP ? "group" : "channel";
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      child: Container(
-        alignment: Alignment.center,
-        child: Column(
-          children: [
-            Text(
-              'New...',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400
-              )
-            ),
-            TextField(
-              autofocus: true,
-              controller: TextEditingController(text: _subject),
-              onChanged: (String value) {
-                _subject = value;
-              },
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w400
-              ),
-              decoration: InputDecoration(
-                border: const UnderlineInputBorder(),
-                hintText: 'Add name for new $_popup_type'
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                RawMaterialButton(
-                  fillColor: Theme.of(context).colorScheme.background,
-                  onPressed: () {
-                    if(_subject == '') {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return WillPopScope(
-                            onWillPop: () async {
-                              return true;
-                            },
-                            child: AlertDialog(
-                              title: const Text('Alert'),
-                              content: Text('Please enter a name for the new $_popup_type'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('OK')
-                                )
-                              ]
-                            )
-                          );
-                        }
-                      );
-                    }
-                  },
-                  child: const Text('CREATE')
-                )
-              ]
-            )
-          ]
-        )
-      )
-    );
-  }
-
-}
-enum _NewPopupType {
-  GROUP,
-  CHANNEL,
-}
 
 
 typedef ContextMenuBuilder = Widget Function(

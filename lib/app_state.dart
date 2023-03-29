@@ -7,7 +7,6 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 
 
-int TWELVE = 12;  // This is kind of a joke. It's only used for taking the hour number in a 24 hour format to 12 hour format.
 
 class GroupChannelState extends ChangeNotifier {
   var current_user = "dsurgenavic";
@@ -68,21 +67,21 @@ class GroupChannelState extends ChangeNotifier {
     }
   }
 
-  void create_group() {
-    num_groups++;
-    group_list.add("New Group");
-    channel_list.add(["Sample Channel"]);
+  void create_group(String newGroupName) {
+    // TODO: Remove print
+    print("Created group $newGroupName");
     notifyListeners();
   }
 
-  void create_channel() {
-    channel_list[current_group].add("New Channel");
+  void create_channel(String newChannelName) {
+    // TODO: Remove print
+    print("Created channel $newChannelName");
     notifyListeners();
   }
 
   void send_message(String body) {
     var ts = Timestamp.now().toDate();
-    var timestamp = "Today at ${ts.hour % TWELVE}:${ts.minute}";
+    var timestamp = "Today at ${ts.hour % 12}:${ts.minute}";
     current_message_list.add(
         MessageCard(
           MessageSender: current_user,
