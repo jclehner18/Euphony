@@ -121,7 +121,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.deepPurple,
         ),
         home: HomePage(),
-        //home: const MainView(),
+        //home: MainView(),
       ),
     );
   }

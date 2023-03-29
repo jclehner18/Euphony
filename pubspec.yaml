@@ -52,6 +52,7 @@ dependencies:
   google_sign_in:
   rflutter_alert: ^2.0.4
   syncfusion_flutter_calendar: ^20.4.52
+  image_picker:
 
 dev_dependencies:
   flutter_test:

@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:euphony/Login1.dart';
 import 'package:euphony/SettingsPage.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
+import 'package:euphony/userSetup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -116,11 +117,13 @@ class GroupChannelState extends ChangeNotifier {
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
-
+  
   @override
   State<MainView> createState() => _MainViewState();
 }
 class _MainViewState extends State<MainView> {
+
+  String name = FirebaseAuth.instance.currentUser!.displayName.toString();
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<GroupChannelState>();
@@ -136,6 +139,7 @@ class _MainViewState extends State<MainView> {
             appBar: AppBar(
                 title: const Text("Euphony"),
                 actions: [
+                  Align(alignment: Alignment.center, child: Text('Welcome ' + name, style: const TextStyle(fontSize: 20), textAlign: TextAlign.center,)),
                   ElevatedButton(
                       onPressed: () {
                         /*
@@ -156,6 +160,7 @@ class _MainViewState extends State<MainView> {
                       },
                       child: const Icon(Icons.logout_outlined)
                   ),
+                  
                 ]
             ),
             body: Row(

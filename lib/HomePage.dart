@@ -27,8 +27,8 @@ class HomePage extends StatelessWidget {
               ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.white, shape: StadiumBorder(),
               ), child: const Text('Login', style: TextStyle(color: Colors.black, /*fontSize: 30,*/ fontWeight: FontWeight.bold),), 
                 onPressed: () {
-                  //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainView()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
+                  //Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainView()));
                 }),
           ])
         ],)
