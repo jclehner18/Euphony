@@ -8,15 +8,19 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 String getDoc(String group, String channel, String message)
 {
   var data;
-  final docRef = db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages').doc('$message');
+  final docRef = db.collection('Groups').doc(group).collection('Channel').doc(channel).collection('Messages').doc(message);
   docRef.get().then(
-      (DocumentSnapshot doc) {
-        data = doc.data() as Map<String, dynamic>;
-      },
-      onError: (e) => print("Error getting document: $e"),
+        (DocumentSnapshot doc) {
+      data = doc.data() as Map<String, dynamic>;
+      print(data);
+      var returnMessage = data?['messageBody'];
+
+      print(returnMessage);
+      return returnMessage;
+    },
+    onError: (e) => print("Error getting document: $e"),
   );
-  var returnMessage = data['messageBody'];
-  return returnMessage;
+  throw 'were fucked';
 }
 
 
@@ -25,7 +29,6 @@ String getDoc(String group, String channel, String message)
 String listenForMessage(String group, String channel)
 {
   var returnMessage;
-  var data;
   var channelPoint = db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages');
   channelPoint.doc().snapshots().listen((docSnapshot) {
     if (docSnapshot.exists) {
@@ -35,8 +38,7 @@ String listenForMessage(String group, String channel)
       return returnMessage;
     }
   });
-  returnMessage = data['messageBody'];
-  return returnMessage;
+  throw 'were fucked';
 }
 
 //this will grab multiple documents, such as when searching through messages
