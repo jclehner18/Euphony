@@ -398,7 +398,7 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
   ];
 
 
-  Future<void> sendMessage(String message) async {
+  sendMessage(String message){
     setState(() {
       messages.add(
           MessageCard(
@@ -408,7 +408,7 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
           )
       );
     });
-    await getDoc('gEsXF5sWSU4BKZpBZXgq','HW3GaiDPb0kcf4aJP6pj','wDHaNCTcWWeSsihuBIJ2');
+    getDoc('gEsXF5sWSU4BKZpBZXgq','HW3GaiDPb0kcf4aJP6pj','wDHaNCTcWWeSsihuBIJ2');
     ////Groups/gEsXF5sWSU4BKZpBZXgq/Channel/HW3GaiDPb0kcf4aJP6pj/Messages/wDHaNCTcWWeSsihuBIJ2
     _message_body_controller.clear();
   }
