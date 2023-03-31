@@ -14,6 +14,8 @@ class SignUp extends StatefulWidget {
   _SignUpState createState() => _SignUpState();
 }
 
+
+
 class _SignUpState extends State<SignUp> {
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
