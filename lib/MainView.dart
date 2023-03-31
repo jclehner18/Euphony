@@ -35,6 +35,77 @@ class MainView extends StatefulWidget {
   State<MainView> createState() => _MainViewState();
 }
 class _MainViewState extends State<MainView> {
+  String _newChannelName = '';
+  String _newGroupName = '';
+  
+  void _onPressNewChannel() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('New Channel'),
+          content: TextField(
+            autofocus: true,
+            decoration: InputDecoration(hintText: 'Enter channel name'),
+            onChanged: (value) {
+              _newChannelName = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                _newChannelName = '';
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text('Create'),
+              onPressed: () {
+                print(_newChannelName);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _onPressNewGroup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('New Group'),
+          content: TextField(
+            autofocus: true,
+            decoration: InputDecoration(hintText: 'Enter group name'),
+            onChanged: (value) {
+              _newGroupName = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                _newGroupName = '';
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text('Create'),
+              onPressed: () {
+                print(_newGroupName);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  String name = FirebaseAuth.instance.currentUser!.displayName.toString();
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<GroupChannelState>();
