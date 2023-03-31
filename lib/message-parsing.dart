@@ -15,7 +15,7 @@ String getDoc(String group, String channel, String message)
       },
       onError: (e) => print("Error getting document: $e"),
   );
-  var returnMessage = data['messageBody'];
+  var returnMessage = data['Message'];
   return returnMessage;
 }
 
