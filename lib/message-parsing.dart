@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 
-//this will grab a document from the firestore database. Could be used for clicking on user profile to obtain their info for a profile page
+//this will grab a specific message from the database, to return it.
 String getDoc(String group, String channel, String message)
 {
   var data;
@@ -19,22 +19,25 @@ String getDoc(String group, String channel, String message)
   return returnMessage;
 }
 
-/*grabAllMsg(String group, String Channel)
+
+
+//this fxn is to listen for new messages being put into the database for the certain channel, then retrieve them
+String listenForMessage(String group, String channel)
 {
-  CollectionReference _collectionRef =
-  FirebaseFirestore.instance.collection('Groups/$group/Channel/$Channel/Messages');
+  var returnMessage;
+  var data;
+  var channelPoint = db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages');
+  channelPoint.doc().snapshots().listen((docSnapshot) {
+    if (docSnapshot.exists) {
+      Map<String, dynamic> data = docSnapshot.data()!;
 
-  Future<void> getData() async {
-    // Get docs from collection reference
-    QuerySnapshot querySnapshot = await _collectionRef.get();
-
-    // Get data from docs and convert map to List
-    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-
-    print(allData);
-  }
-}*/
-
+      returnMessage = data['messageBody'];
+      return returnMessage;
+    }
+  });
+  returnMessage = data['messageBody'];
+  return returnMessage;
+}
 
 //this will grab multiple documents, such as when searching through messages
 getMsgDoc(collect, msg, compare)
