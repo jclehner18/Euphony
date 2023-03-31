@@ -40,9 +40,9 @@ String listenForMessage(String group, String channel)
 }
 
 //this will grab multiple documents, such as when searching through messages
-getMsgDoc(collect, msg, compare)
+getMsgDoc(String group,String channel, msg, compare)
 {
-  db.collection(collect).where(msg.contains(compare)).get().then(
+  db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages').where(msg.contains(compare)).get().then(
       (res) => print("Success"),
       onError: (e) => print ("Error getting messages: $e"),
   );
@@ -59,7 +59,7 @@ grabNewMsg(collect,msg)
 }
 
 //this is used to send new messages into the database using the current channel collection that we are in
-sendNewMsg(collect, String msg, String uID)
+sendNewMsg(String group,String channel, String msg, String uID)
 {
 
   final newMsg ={
@@ -69,7 +69,11 @@ sendNewMsg(collect, String msg, String uID)
   };
 
   db
-    .collection(collect)
+    .collection('Groups')
+    .doc(group)
+    .collection('Channel')
+    .doc(channel)
+    .collection('Messages')
     .doc()
     .set(newMsg)
     .onError((e, _) => print("Error writing document $e"));
