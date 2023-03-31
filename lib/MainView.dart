@@ -9,6 +9,9 @@ MainView.dart is the main screen users will interact with.
 // ignore_for_file: non_constant_identifier_names, file_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:euphony/Login1.dart';
+import 'package:euphony/SettingsPage.dart';
+import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,82 +30,11 @@ int NARROW_SCREEN_WIDTH = 600;
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
-
+  
   @override
   State<MainView> createState() => _MainViewState();
 }
 class _MainViewState extends State<MainView> {
-  String _newChannelName = '';
-  String _newGroupName = '';
-
-  void _onPressNewChannel() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('New Channel'),
-          content: TextField(
-            autofocus: true,
-            decoration: InputDecoration(hintText: 'Enter channel name'),
-            onChanged: (value) {
-              _newChannelName = value;
-            },
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                _newChannelName = '';
-                Navigator.pop(context);
-              },
-            ),
-            TextButton(
-              child: Text('Create'),
-              onPressed: () {
-                print(_newChannelName);
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _onPressNewGroup() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('New Group'),
-          content: TextField(
-            autofocus: true,
-            decoration: InputDecoration(hintText: 'Enter group name'),
-            onChanged: (value) {
-              _newGroupName = value;
-            },
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                _newGroupName = '';
-                Navigator.pop(context);
-              },
-            ),
-            TextButton(
-              child: Text('Create'),
-              onPressed: () {
-                print(_newGroupName);
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<GroupChannelState>();
@@ -116,6 +48,7 @@ class _MainViewState extends State<MainView> {
             appBar: AppBar(
                 title: const Text("Euphony"),
                 actions: [
+                  Align(alignment: Alignment.center, child: Text('Welcome ' + name, style: const TextStyle(fontSize: 20), textAlign: TextAlign.center,)),
                   ElevatedButton(
                       onPressed: () {
                         /*
@@ -136,6 +69,7 @@ class _MainViewState extends State<MainView> {
                       },
                       child: const Icon(Icons.logout_outlined)
                   ),
+                  
                 ]
             ),
             body: Row(
