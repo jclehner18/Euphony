@@ -16,10 +16,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:euphony/message-parsing.dart';
 
-import 'package:euphony/Login1.dart';
-import 'package:euphony/SettingsPage.dart';
-import 'package:euphony/reusable_widgets/reusable_widget.dart';
+
 import 'package:euphony/app_state.dart';
 import 'package:euphony/calendar.dart';
 
@@ -399,7 +398,7 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
   ];
 
 
-  void sendMessage(String message) {
+  sendMessage(String message){
     setState(() {
       messages.add(
           MessageCard(
@@ -409,6 +408,8 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
           )
       );
     });
+    getDoc('gEsXF5sWSU4BKZpBZXgq','HW3GaiDPb0kcf4aJP6pj','wDHaNCTcWWeSsihuBIJ2');
+    ////Groups/gEsXF5sWSU4BKZpBZXgq/Channel/HW3GaiDPb0kcf4aJP6pj/Messages/wDHaNCTcWWeSsihuBIJ2
     _message_body_controller.clear();
   }
 
