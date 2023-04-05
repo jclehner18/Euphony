@@ -20,7 +20,7 @@ String getDoc(String group, String channel, String message)
     },
     onError: (e) => print("Error getting document: $e"),
   );
-  throw 'were fucked';
+  throw 'awe hell';
 }
 
 
@@ -38,7 +38,25 @@ String listenForMessage(String group, String channel)
       return returnMessage;
     }
   });
-  throw 'were fucked';
+  throw 'awe hell';
+}
+
+List messageList(String group, String channel)
+{
+  List<Map<String,dynamic>> channelMessageList = [];
+  db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").get().then(
+        (querySnapshot) {
+      print("successfully completed");
+      for (var docSnapshot in querySnapshot.docs){
+        print('${docSnapshot.id} => ${docSnapshot.data()}');
+        channelMessageList.add(docSnapshot.data());
+
+      }
+      return channelMessageList;
+    },
+    onError: (e) => print("Error completing: $e"),
+  );
+  throw "awe hell";
 }
 
 //this will grab multiple documents, such as when searching through messages

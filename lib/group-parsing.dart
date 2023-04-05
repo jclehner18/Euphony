@@ -51,7 +51,7 @@ List groupList(String uid)
     onError: (e) => print("Error completing: $e"),
   );
 
-  throw "were fucked";
+  throw "awe hell";
 }
 
 List channelList(String group)
@@ -69,5 +69,5 @@ List channelList(String group)
       },
       onError: (e) => print("Error completing: $e"),
   );
-  throw "were fucked";
+  throw "awe hell";
 }
