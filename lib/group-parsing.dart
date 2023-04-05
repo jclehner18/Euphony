@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 
-void newGroup(collect, String name, String uID)
+void newGroup(String name, String uID)
 {
   final newGrou ={
     "name": name,
@@ -12,7 +12,7 @@ void newGroup(collect, String name, String uID)
   };
 
   db
-      .collection(collect)
+      .collection('Groups')
       .doc()
       .set(newGrou)
       .onError((e, _) => print("Error writing document $e"));
@@ -20,17 +20,36 @@ void newGroup(collect, String name, String uID)
   FirebaseFirestore.instance.collection('Groups').doc().collection('Channels');
 }
 
-void newChannel(collect, int type, String grou)
+void newChannel(int type, String group)
 {
   final newChan ={
     "type": type
   };
 
   db
-      .collection(collect)
-      .doc()
+      .collection('Groups')
+      .doc(group)
       .collection('Channels')
       .doc()
       .set(newChan)
       .onError((e, _) => print("Error writing document $e"));
+}
+
+List groupList(String uid)
+{
+  List<Map<String, dynamic>> userGroupList = [];
+  db.collection("Users").doc(uid).collection("Group List").get().then(
+        (querySnapshot) {
+      print("Successfully completed");
+
+      for (var docSnapshot in querySnapshot.docs) {
+        print('${docSnapshot.id} => ${docSnapshot.data()}');
+        userGroupList.add(docSnapshot.data());
+      }
+      return userGroupList;
+    },
+    onError: (e) => print("Error completing: $e"),
+  );
+
+  throw "were fucked";
 }

@@ -50,14 +50,19 @@ getMsgDoc(String group,String channel, msg, compare)
   );
 }
 
-//this will grab a new message that has been sent to the database
-grabNewMsg(collect,msg)
+void pinMsg(String group, String channel, String message, bool pin)
 {
-  final newMsg = db.collection(collect).doc(msg);
-  newMsg.snapshots().listen(
-        (event) => print("current data: ${event.data()}"),
-    onError: (error) => print("Listen failed: $error"),
-  );
+  db
+    .collection('Groups')
+    .doc(group)
+    .collection('Channel')
+    .doc(channel)
+    .collection('Messages')
+    .doc(message)
+    .update({
+    "isPin": pin
+    })
+    .onError((e, _) => print ("Error pinning document: $e"));
 }
 
 //this is used to send new messages into the database using the current channel collection that we are in
