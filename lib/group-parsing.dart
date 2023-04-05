@@ -51,5 +51,23 @@ List groupList(String uid)
   );
   return userGroupList;
 
-  throw "were fucked";
+  throw "awe hell";
+}
+
+List channelList(String group)
+{
+  List<Map<String,dynamic>> groupChannelList = [];
+  db.collection("Groups").doc(group).collection("Channels").get().then(
+      (querySnapshot) {
+        print("successfully completed");
+        for (var docSnapshot in querySnapshot.docs){
+          print('${docSnapshot.id} => ${docSnapshot.data()}');
+          groupChannelList.add(docSnapshot.data());
+
+        }
+        return groupChannelList;
+      },
+      onError: (e) => print("Error completing: $e"),
+  );
+  throw "awe hell";
 }
