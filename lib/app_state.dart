@@ -5,11 +5,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
+import 'package:euphony/group-parsing.dart';
 
 
 
 class GroupChannelState extends ChangeNotifier {
-  var current_user = "dsurgenavic";
+  var current_user = FirebaseAuth.instance.currentUser;
 
   var num_groups = 2;
   var current_group = 0;
@@ -39,10 +40,12 @@ class GroupChannelState extends ChangeNotifier {
 
   void init_groups_list() {
     group_list.clear();
+    String? uid = current_user?.uid;
 
-    //TODO: fetch groups from database
-    for (var i = 0; i < num_groups; i++) {
-      group_list.add("Sample Group");
+    List db_list = groupList(uid!);
+
+    for (var i = 0; i < db_list.length; i++) {
+      group_list.add(db_list[i]);
     }
     channel_list.add("Sample Channel");
     channel_list.add("Sample Channel");

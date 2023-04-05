@@ -46,10 +46,10 @@ List groupList(String uid)
         print('${docSnapshot.id} => ${docSnapshot.data()}');
         userGroupList.add(docSnapshot.data());
       }
-      return userGroupList;
     },
     onError: (e) => print("Error completing: $e"),
   );
+  return userGroupList;
 
   throw "were fucked";
 }
