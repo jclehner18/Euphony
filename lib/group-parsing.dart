@@ -65,9 +65,10 @@ List channelList(String group)
           groupChannelList.add(docSnapshot.data());
 
         }
-        return groupChannelList;
       },
       onError: (e) => print("Error completing: $e"),
   );
+  return groupChannelList;
+
   throw "awe hell";
 }

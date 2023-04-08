@@ -23,9 +23,13 @@ class GroupChannelState extends ChangeNotifier {
 
   void select_group(int index) {
     current_group = index;
-    select_channel(0);
+    channel_list.clear();
 
-    // TODO: Retrieve channels from db. Store them in the channel_list variable.
+    //List retrievedChannelList = channelList(group_list[current_group]);
+
+    //for (var i = 0; i < retrievedChannelList.length; i++) {
+    //  channel_list.add(retrievedChannelList[i]);
+    //}
 
     notifyListeners();
   }
@@ -42,24 +46,32 @@ class GroupChannelState extends ChangeNotifier {
     group_list.clear();
     String? uid = current_user?.uid;
 
-    List db_list = groupList(uid!);
+    //List retrievedGroupList = groupList(uid!);
 
-    for (var i = 0; i < db_list.length; i++) {
-      group_list.add(db_list[i]);
-    }
-    channel_list.add("Sample Channel");
-    channel_list.add("Sample Channel");
+    //for (var i = 0; i < retrievedGroupList.length; i++) {
+    //  group_list.add(retrievedGroupList[i]);
+    //}
+
+    group_list = ["", ""];
+    channel_list = ["Sample 1", "Sample 2"];
+
   }
 
   void create_group(String newGroupName) {
     // TODO: Remove print
     print("Created group $newGroupName");
+
+    newGroup(newGroupName, current_user!.uid);
+
     notifyListeners();
   }
 
   void create_channel(String newChannelName) {
     // TODO: Remove print
     print("Created channel $newChannelName");
+
+    newChannel(0, group_list[current_group]);
+
     notifyListeners();
   }
 
