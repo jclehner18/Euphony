@@ -6,10 +6,6 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 void newGroup(String name, String uID)
 {
-  final newGroupFields ={
-    "name": name,
-    "owner": uID
-  };
 
   final newGroup = db
       .collection('Groups')
@@ -31,8 +27,7 @@ void newGroup(String name, String uID)
     .set({
     "groupID": newGroup.id
   }).onError((e, _) => print("Error adding document to user group list: $e"));
-
-
+  
 }
 
 
