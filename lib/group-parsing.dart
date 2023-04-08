@@ -8,7 +8,7 @@ void newGroup(String name, String uID)
 {
   final newGroup ={
     "name": name,
-    "owner": uID,
+    "owner": uID
   };
 
   final newGroupID = db
