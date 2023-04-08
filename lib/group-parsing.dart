@@ -6,24 +6,40 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 void newGroup(String name, String uID)
 {
-  final newGrou ={
+  final newGroup ={
     "name": name,
     "owner": uID
   };
 
-  db
+  final newGroupID = db
       .collection('Groups')
       .doc()
-      .set(newGrou)
+      .set(
+        newGroup
+  )
       .onError((e, _) => print("Error writing document $e"));
 
   FirebaseFirestore.instance.collection('Groups').doc().collection('Channels');
+
+  db
+    .collection('Users')
+    .doc(uID)
+    .collection("Group List")
+    .doc()
+    .set({
+    "groupID": newGroupID
+  }).onError((e, _) => print("Error adding document to user group list: $e"));
+
+
 }
 
-void newChannel(int type, String group)
+
+
+void newChannel(int type, String group, String channelName)
 {
   final newChan ={
-    "type": type
+    "type": type,
+    "name": channelName
   };
 
   db
