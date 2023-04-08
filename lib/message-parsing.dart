@@ -41,6 +41,7 @@ String listenForMessage(String group, String channel)
   throw 'awe hell';
 }
 
+//this will pull all the messages from a channel
 List messageList(String group, String channel)
 {
   List<Map<String,dynamic>> channelMessageList = [];
@@ -68,6 +69,7 @@ getMsgDoc(String group,String channel, msg, compare)
   );
 }
 
+//this fxn will update the pin status of a message
 void pinMsg(String group, String channel, String message, bool pin)
 {
   db
