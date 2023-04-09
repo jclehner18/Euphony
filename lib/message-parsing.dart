@@ -5,7 +5,7 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 
 //this will grab a specific message from the database, to return it.
-String getDoc(String group, String channel, String message)
+Future<String> getDoc(String group, String channel, String message) async
 {
   var data;
   final docRef = db.collection('Groups').doc(group).collection('Channel').doc(channel).collection('Messages').doc(message);
@@ -26,7 +26,7 @@ String getDoc(String group, String channel, String message)
 
 
 //this fxn is to listen for new messages being put into the database for the certain channel, then retrieve them
-String listenForMessage(String group, String channel)
+Future<String> listenForMessage(String group, String channel) async
 {
   var returnMessage;
   var channelPoint = db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages');
@@ -42,7 +42,7 @@ String listenForMessage(String group, String channel)
 }
 
 //this will pull all the messages from a channel
-List messageList(String group, String channel)
+Future<List> messageList(String group, String channel) async
 {
   List<Map<String,dynamic>> channelMessageList = [];
   db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").get().then(
