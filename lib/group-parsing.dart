@@ -48,7 +48,7 @@ void newChannel(int type, String group, String channelName)
       .onError((e, _) => print("Error writing document $e"));
 }
 
-List groupList(String uid)
+Future<List> groupList(String uid) async
 {
   List<Map<String, dynamic>> userGroupList = [];
   db.collection("Users").doc(uid).collection("Group List").get().then(
@@ -63,7 +63,6 @@ List groupList(String uid)
     onError: (e) => print("Error completing: $e"),
   );
   return userGroupList;
-
   throw "awe hell";
 }
 

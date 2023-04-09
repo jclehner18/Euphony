@@ -42,15 +42,18 @@ class GroupChannelState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void init_groups_list() {
+  Future<void> init_groups_list() async {
     group_list.clear();
-    String? uid = current_user?.uid;
+    String uid = current_user!.uid;
 
-    //List retrievedGroupList = groupList(uid!);
+    var retrievedGroupList = await groupList(uid);
 
-    //for (var i = 0; i < retrievedGroupList.length; i++) {
-    //  group_list.add(retrievedGroupList[i]);
-    //}
+    print(retrievedGroupList.length);
+
+    for (var i = 0; i < retrievedGroupList.length; i++) {
+      group_list.add(retrievedGroupList[i]['groupID']);
+      print('${retrievedGroupList[i]['groupID']}');
+    }
 
     group_list = ["", ""];
     channel_list = ["Sample 1", "Sample 2"];
@@ -70,7 +73,7 @@ class GroupChannelState extends ChangeNotifier {
     // TODO: Remove print
     print("Created channel $newChannelName");
 
-    newChannel(0, group_list[current_group]);
+    newChannel(0, group_list[current_group], newChannelName);
 
     notifyListeners();
   }
