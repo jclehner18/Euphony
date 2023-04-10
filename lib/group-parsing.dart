@@ -27,7 +27,7 @@ void newGroup(String name, String uID)
     .set({
     "groupID": newGroup.id
   }).onError((e, _) => print("Error adding document to user group list: $e"));
-  
+
 }
 
 
@@ -48,7 +48,7 @@ void newChannel(int type, String group, String channelName)
       .onError((e, _) => print("Error writing document $e"));
 }
 
-Future<List> groupList(String uid) async
+Future <List> groupList(String uid) async
 {
   List<Map<String, dynamic>> userGroupList = [];
   db.collection("Users").doc(uid).collection("Group List").get().then(
@@ -59,14 +59,15 @@ Future<List> groupList(String uid) async
         print('${docSnapshot.id} => ${docSnapshot.data()}');
         userGroupList.add(docSnapshot.data());
       }
+      return userGroupList;
     },
     onError: (e) => print("Error completing: $e"),
   );
-  return userGroupList;
+
   throw "awe hell";
 }
 
-List channelList(String group)
+Future<List> channelList(String group) async
 {
   List<Map<String,dynamic>> groupChannelList = [];
   db.collection("Groups").doc(group).collection("Channels").get().then(
@@ -77,10 +78,9 @@ List channelList(String group)
           groupChannelList.add(docSnapshot.data());
 
         }
+        return groupChannelList;
       },
       onError: (e) => print("Error completing: $e"),
   );
-  return groupChannelList;
-
   throw "awe hell";
 }
