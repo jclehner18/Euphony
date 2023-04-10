@@ -85,6 +85,23 @@ void pinMsg(String group, String channel, String message, bool pin)
     .onError((e, _) => print ("Error pinning document: $e"));
 }
 
+Future<List> getPinnedMessages(String group, String channel) async{
+  List<Map<String,dynamic>> pinMessageList = [];
+  await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").where("isPin",isEqualTo: true).get().then(
+        (querySnapshot) {
+      print("successfully completed");
+      for (var docSnapshot in querySnapshot.docs){
+        print('${docSnapshot.id} => ${docSnapshot.data()}');
+        pinMessageList.add(docSnapshot.data());
+
+      }
+      return pinMessageList;
+    },
+    onError: (e) => print("Error completing: $e"),
+  );
+  throw "awe hell";
+}
+
 //this is used to send new messages into the database using the current channel collection that we are in
 sendNewMsg(String group,String channel, String msg, String uID)
 {
