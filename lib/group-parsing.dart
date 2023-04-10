@@ -48,6 +48,35 @@ void newChannel(int type, String group, String channelName)
       .onError((e, _) => print("Error writing document $e"));
 }
 
+void createEvent(String group, String channel, String eventName, String time, String date){
+
+  db
+    .collection('Groups').doc(group)
+      .collection('Channels').doc(channel)
+      .collection('Events').doc()
+      .set({
+    "name": eventName,
+    "time": time,
+    "date": date
+  }).onError((e, _) => print("Error writing document $e"));
+}
+
+void addUserToGroup(String group, String newUser){
+  db
+    .collection('Groups').doc(group)
+      .collection('Users').doc()
+      .set({
+      "uid": newUser
+  }).onError((e, _) => print("Error writing document $e"));
+
+  db
+    .collection('Users').doc(newUser)
+    .collection('Group List').doc()
+    .set({
+    "groupID": group
+  }).onError((e, _) => print("Error writing document $e"));
+}
+
 Future <List> groupList(String uid) async
 {
   List<Map<String, dynamic>> userGroupList = [];
@@ -86,3 +115,20 @@ Future<List> channelList(String group) async
   );
   throw "awe hell";
 }
+
+Future<List> eventList(String group, String channel) async{
+  List<Map<String,dynamic>> channelEventList = [];
+  await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Events").get().then(
+      (querySnapshot){
+        print("Successfully Completed");
+        for (var docSnapshot in querySnapshot.docs){
+          print('${docSnapshot.id} => ${docSnapshot.data()}');
+          channelEventList.add(docSnapshot.data());
+        }
+        return channelEventList;
+      },
+      onError: (e) => print("Error completing: $e"),
+  );
+  throw "awe hell";
+}
+
