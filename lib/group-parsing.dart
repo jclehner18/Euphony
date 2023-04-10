@@ -51,7 +51,9 @@ void newChannel(int type, String group, String channelName)
 Future <List> groupList(String uid) async
 {
   List<Map<String, dynamic>> userGroupList = [];
-  db.collection("Users").doc(uid).collection("Group List").get().then(
+
+
+  await db.collection("Users").doc(uid).collection("Group List").get().then(
         (querySnapshot) {
       print("Successfully completed");
 
@@ -70,7 +72,7 @@ Future <List> groupList(String uid) async
 Future<List> channelList(String group) async
 {
   List<Map<String,dynamic>> groupChannelList = [];
-  db.collection("Groups").doc(group).collection("Channels").get().then(
+  await db.collection("Groups").doc(group).collection("Channels").get().then(
       (querySnapshot) {
         print("successfully completed");
         for (var docSnapshot in querySnapshot.docs){

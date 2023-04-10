@@ -9,7 +9,7 @@ Future<String> getDoc(String group, String channel, String message) async
 {
   var data;
   final docRef = db.collection('Groups').doc(group).collection('Channel').doc(channel).collection('Messages').doc(message);
-  docRef.get().then(
+  await docRef.get().then(
         (DocumentSnapshot doc) {
       data = doc.data() as Map<String, dynamic>;
       print(data);
@@ -30,7 +30,7 @@ Future<String> listenForMessage(String group, String channel) async
 {
   var returnMessage;
   var channelPoint = db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages');
-  channelPoint.doc().snapshots().listen((docSnapshot) {
+  await channelPoint.doc().snapshots().listen((docSnapshot) {
     if (docSnapshot.exists) {
       Map<String, dynamic> data = docSnapshot.data()!;
 
@@ -45,7 +45,7 @@ Future<String> listenForMessage(String group, String channel) async
 Future<List> messageList(String group, String channel) async
 {
   List<Map<String,dynamic>> channelMessageList = [];
-  db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").get().then(
+  await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").get().then(
         (querySnapshot) {
       print("successfully completed");
       for (var docSnapshot in querySnapshot.docs){
