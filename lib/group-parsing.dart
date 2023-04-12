@@ -3,7 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
-
+//creates a new group giving itself a name and group id, as well as add it to the creator's group list
+//CONFIRM WORKS
 void newGroup(String name, String uID)
 {
 
@@ -31,8 +32,9 @@ void newGroup(String name, String uID)
 }
 
 
-
-void newChannel(int type, String group, String channelName)
+//creates a new channel given a group, a type and a name for the channel
+//CONFIRM WORKS
+void newChannel(String group, int type, String channelName)
 {
   final newChan ={
     "type": type,
@@ -48,39 +50,83 @@ void newChannel(int type, String group, String channelName)
       .onError((e, _) => print("Error writing document $e"));
 }
 
-Future <List> groupList(String uid) async
+//this fxn will create a new event to be used in the calendar
+//CONFIRM WORKS
+void createEvent(String group, String channel, String eventName){
+
+  db
+    .collection('Groups').doc(group)
+      .collection('Channels').doc(channel)
+      .collection('Events').doc()
+      .set({
+    "name": eventName,
+    "time": FieldValue.serverTimestamp()
+  }).onError((e, _) => print("Error writing document $e"));
+}
+
+//this function will a user to the group
+//CONFIRM WORKS
+void addUserToGroup(String group, String newUser){
+  db
+    .collection('Groups').doc(group)
+      .collection('Users').doc(newUser)
+      .set({
+      "uid": newUser
+  }).onError((e, _) => print("Error writing document $e"));
+
+  db
+    .collection('Users').doc(newUser)
+    .collection('Group List').doc(group)
+    .set({
+    "groupID": group
+  }).onError((e, _) => print("Error writing document $e"));
+}
+
+
+//grabs a list of the groups that a user is in
+//CONFIRM WORKS
+Future <List<Map<String,dynamic>>> groupList(String uid) async
 {
   List<Map<String, dynamic>> userGroupList = [];
-  db.collection("Users").doc(uid).collection("Group List").get().then(
-        (querySnapshot) {
-      print("Successfully completed");
+  var query = await db.collection("Users").doc(uid).collection("Group List").get();
+  print(query);
+  await db.collection("Users").doc(uid).collection("Group List").get();
 
-      for (var docSnapshot in querySnapshot.docs) {
-        print('${docSnapshot.id} => ${docSnapshot.data()}');
-        userGroupList.add(docSnapshot.data());
-      }
-      return userGroupList;
-    },
-    onError: (e) => print("Error completing: $e"),
-  );
 
-  throw "awe hell";
+    for (var docSnapshot in query.docs) {
+      print('${docSnapshot.id} => ${docSnapshot.data()}');
+      userGroupList.add(docSnapshot.data());
+    }
+
+  return userGroupList;
 }
 
-Future<List> channelList(String group) async
+
+//generates a list of channels from a group
+//CONFIRM WORKS
+Future<List<Map<String, dynamic>>> channelList(String group) async
 {
   List<Map<String,dynamic>> groupChannelList = [];
-  db.collection("Groups").doc(group).collection("Channels").get().then(
-      (querySnapshot) {
-        print("successfully completed");
-        for (var docSnapshot in querySnapshot.docs){
-          print('${docSnapshot.id} => ${docSnapshot.data()}');
-          groupChannelList.add(docSnapshot.data());
+  var query = await db.collection("Groups").doc(group).collection("Channels").get();
 
-        }
-        return groupChannelList;
-      },
-      onError: (e) => print("Error completing: $e"),
-  );
-  throw "awe hell";
+  for (var docSnapshot in query.docs){
+    print('${docSnapshot.id} => ${docSnapshot.data()}');
+    groupChannelList.add(docSnapshot.data());
+
+  }
+  return groupChannelList;
 }
+
+
+//generates a list of events from a channel
+//CONFRIM WORKS
+Future<List<Map<String, dynamic>>> eventList(String group, String channel) async{
+  List<Map<String,dynamic>> channelEventList = [];
+  var query = await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Events").get();
+  for (var docSnapshot in query.docs){
+    print('${docSnapshot.id} => ${docSnapshot.data()}');
+    channelEventList.add(docSnapshot.data());
+  }
+  return channelEventList;
+}
+

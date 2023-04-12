@@ -5,11 +5,12 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 
 //this will grab a specific message from the database, to return it.
+//IRRELEVANT FOR ACTUAL USE. USED FOR TESTING READING
 Future<String> getDoc(String group, String channel, String message) async
 {
   var data;
   final docRef = db.collection('Groups').doc(group).collection('Channel').doc(channel).collection('Messages').doc(message);
-  docRef.get().then(
+  await docRef.get().then(
         (DocumentSnapshot doc) {
       data = doc.data() as Map<String, dynamic>;
       print(data);
@@ -30,7 +31,7 @@ Future<String> listenForMessage(String group, String channel) async
 {
   var returnMessage;
   var channelPoint = db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages');
-  channelPoint.doc().snapshots().listen((docSnapshot) {
+  await channelPoint.doc().snapshots().listen((docSnapshot) {
     if (docSnapshot.exists) {
       Map<String, dynamic> data = docSnapshot.data()!;
 
@@ -42,25 +43,21 @@ Future<String> listenForMessage(String group, String channel) async
 }
 
 //this will pull all the messages from a channel
-Future<List> messageList(String group, String channel) async
+//CONFIRM WORKS
+Future<List<Map<String, dynamic>>> messageList(String group, String channel) async
 {
   List<Map<String,dynamic>> channelMessageList = [];
-  db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").get().then(
-        (querySnapshot) {
-      print("successfully completed");
-      for (var docSnapshot in querySnapshot.docs){
-        print('${docSnapshot.id} => ${docSnapshot.data()}');
-        channelMessageList.add(docSnapshot.data());
+  var query = await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").get();
+  for (var docSnapshot in query.docs){
+    print('${docSnapshot.id} => ${docSnapshot.data()}');
+    channelMessageList.add(docSnapshot.data());
 
-      }
-      return channelMessageList;
-    },
-    onError: (e) => print("Error completing: $e"),
-  );
-  throw "awe hell";
+  }
+  return channelMessageList;
 }
 
 //this will grab multiple documents, such as when searching through messages
+//NEEDS WORK
 getMsgDoc(String group,String channel, msg, compare)
 {
   db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages').where(msg.contains(compare)).get().then(
@@ -70,35 +67,50 @@ getMsgDoc(String group,String channel, msg, compare)
 }
 
 //this fxn will update the pin status of a message
-void pinMsg(String group, String channel, String message, bool pin)
+//CONFIRM WORKS
+Future<void> pinMsg(String group, String channel, String message, bool pin) async
 {
-  db
-    .collection('Groups')
-    .doc(group)
-    .collection('Channel')
-    .doc(channel)
-    .collection('Messages')
-    .doc(message)
-    .update({
-    "isPin": pin
-    })
+  final msgToPin = db
+      .collection('Groups')
+      .doc(group)
+      .collection('Channels')
+      .doc(channel)
+      .collection('Messages')
+      .doc(message);
+  await msgToPin
+    .update({"isPin": true})
     .onError((e, _) => print ("Error pinning document: $e"));
 }
 
+//this fxn will grab a list of all pinned messages
+//CONFIRM WORKS
+Future<List<Map<String, dynamic>>> getPinnedMessages(String group, String channel) async{
+  List<Map<String,dynamic>> pinMessageList = [];
+  var query = await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").where("isPin",isEqualTo: true).get();
+  for (var docSnapshot in query.docs){
+    print('${docSnapshot.id} => ${docSnapshot.data()}');
+    pinMessageList.add(docSnapshot.data());
+
+  }
+  return pinMessageList;
+}
+
 //this is used to send new messages into the database using the current channel collection that we are in
+//CONFIRM WORKS
 sendNewMsg(String group,String channel, String msg, String uID)
 {
 
   final newMsg ={
     "messageBody": msg,
     "time": FieldValue.serverTimestamp(),
-    "uID": uID
+    "uID": uID,
+    "isPin": false
   };
 
   db
     .collection('Groups')
     .doc(group)
-    .collection('Channel')
+    .collection('Channels')
     .doc(channel)
     .collection('Messages')
     .doc()
