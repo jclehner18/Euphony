@@ -34,9 +34,11 @@ class MainView extends StatefulWidget {
   State<MainView> createState() => _MainViewState();
 }
 class _MainViewState extends State<MainView> {
+
   String _newChannelName = '';
   String _newGroupName = '';
-  
+
+
   void _onPressNewChannel() {
     showDialog(
       context: context,
@@ -104,7 +106,9 @@ class _MainViewState extends State<MainView> {
       },
     );
   }
+
   String name = FirebaseAuth.instance.currentUser!.displayName.toString();
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<GroupChannelState>();
@@ -118,7 +122,7 @@ class _MainViewState extends State<MainView> {
             appBar: AppBar(
                 title: const Text("Euphony"),
                 actions: [
-                  Align(alignment: Alignment.center, child: Text('Welcome ' + name, style: const TextStyle(fontSize: 20), textAlign: TextAlign.center,)),
+                  Align(alignment: Alignment.center, child: Text('Welcome $name', style: const TextStyle(fontSize: 20), textAlign: TextAlign.center,)),
                   ElevatedButton(
                       onPressed: () {
                         /*

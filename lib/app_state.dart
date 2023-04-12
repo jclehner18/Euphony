@@ -5,11 +5,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
+import 'package:euphony/group-parsing.dart';
 
 
 
 class GroupChannelState extends ChangeNotifier {
-  var current_user = "dsurgenavic";
+  var current_user = FirebaseAuth.instance.currentUser;
 
   var num_groups = 2;
   var current_group = 0;
@@ -22,9 +23,13 @@ class GroupChannelState extends ChangeNotifier {
 
   void select_group(int index) {
     current_group = index;
-    select_channel(0);
+    channel_list.clear();
 
-    // TODO: Retrieve channels from db. Store them in the channel_list variable.
+    //List retrievedChannelList = channelList(group_list[current_group]);
+
+    //for (var i = 0; i < retrievedChannelList.length; i++) {
+    //  channel_list.add(retrievedChannelList[i]);
+    //}
 
     notifyListeners();
   }
@@ -37,26 +42,41 @@ class GroupChannelState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void init_groups_list() {
+  Future<void> init_groups_list() async {
     group_list.clear();
+    String uid = current_user!.uid;
 
-    //TODO: fetch groups from database
-    for (var i = 0; i < num_groups; i++) {
-      group_list.add("Sample Group");
+    var retrievedGroupList = await groupList(uid);
+
+    print(retrievedGroupList.length);
+
+    for (var i = 0; i < retrievedGroupList.length; i++) {
+      group_list.add(retrievedGroupList[i]['groupID']);
+      print('${retrievedGroupList[i]['groupID']}');
     }
-    channel_list.add("Sample Channel");
-    channel_list.add("Sample Channel");
+
+    print('$group_list');
+
+    //group_list = ["", ""];
+    channel_list = ["Sample 1", "Sample 2"];
+
   }
 
   void create_group(String newGroupName) {
     // TODO: Remove print
     print("Created group $newGroupName");
+
+    newGroup(newGroupName, current_user!.uid);
+
     notifyListeners();
   }
 
   void create_channel(String newChannelName) {
     // TODO: Remove print
     print("Created channel $newChannelName");
+
+    newChannel(group_list[current_group]['groupID'], 0, newChannelName);
+
     notifyListeners();
   }
 
