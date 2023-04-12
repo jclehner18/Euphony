@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -58,13 +57,25 @@ Future<List<Map<String, dynamic>>> messageList(String group, String channel) asy
 
 //this will grab multiple documents, such as when searching through messages
 //NEEDS WORK
-getMsgDoc(String group,String channel, msg, compare)
-{
-  db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages').where(msg.contains(compare)).get().then(
-      (res) => print("Success"),
-      onError: (e) => print ("Error getting messages: $e"),
-  );
-}
+//
+//CANNOT COMPLETE THIS WITHOUT THIRD PARTY SEARCH
+/*Future<List<Map<String, dynamic>>> searchMessages(String group,String channel, msg, compare) async {
+
+
+
+
+  List<Map<String,dynamic>> searchList = [];
+  var query = await db.collection('Groups').doc(group).collection('Channels').doc(channel).collection('Messages').get();
+  for (var docSnapshot in query.docs){
+    print('${docSnapshot.id} => ${docSnapshot.data()}');
+
+    searchList.add(docSnapshot.data());
+  }
+  for(var i in searchList){
+
+  }
+  return searchList;
+}*/
 
 //this fxn will update the pin status of a message
 //CONFIRM WORKS
