@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -52,7 +51,7 @@ void newChannel(String group, int type, String channelName)
 
 //this fxn will create a new event to be used in the calendar
 //CONFIRM WORKS
-void createEvent(String group, String channel, String eventName){
+void createEvent(String group, String channel, String eventName, Timestamp eventTime){
 
   db
     .collection('Groups').doc(group)
@@ -60,7 +59,7 @@ void createEvent(String group, String channel, String eventName){
       .collection('Events').doc()
       .set({
     "name": eventName,
-    "time": FieldValue.serverTimestamp()
+    "time": eventTime
   }).onError((e, _) => print("Error writing document $e"));
 }
 
