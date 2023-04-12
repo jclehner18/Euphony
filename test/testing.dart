@@ -14,7 +14,7 @@ Future<void> main()async{
   String msgID = "WNbWKadZMEjGoFLJ7DDZ";
   List<Map<String, dynamic>> testing=[];
 
-  testing = await eventList(groupID, channelID);
+  //testing = await searchMessages(groupID, channelID, 'Darius', compare);
 
   print(testing);
 
