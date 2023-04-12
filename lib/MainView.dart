@@ -34,9 +34,11 @@ class MainView extends StatefulWidget {
   State<MainView> createState() => _MainViewState();
 }
 class _MainViewState extends State<MainView> {
+
   String _newChannelName = '';
   String _newGroupName = '';
-  
+
+
   void _onPressNewChannel() {
     showDialog(
       context: context,

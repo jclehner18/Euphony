@@ -55,7 +55,9 @@ class GroupChannelState extends ChangeNotifier {
       print('${retrievedGroupList[i]['groupID']}');
     }
 
-    group_list = ["", ""];
+    print('$group_list');
+
+    //group_list = ["", ""];
     channel_list = ["Sample 1", "Sample 2"];
 
   }
@@ -73,7 +75,7 @@ class GroupChannelState extends ChangeNotifier {
     // TODO: Remove print
     print("Created channel $newChannelName");
 
-    newChannel(0, group_list[current_group], newChannelName);
+    newChannel(group_list[current_group]['groupID'], 0, newChannelName);
 
     notifyListeners();
   }
