@@ -46,18 +46,18 @@ class GroupChannelState extends ChangeNotifier {
     group_list.clear();
     String uid = current_user!.uid;
 
-    var retrievedGroupList = await groupList(uid);
+    //var retrievedGroupList = await groupList(uid);
 
-    print(retrievedGroupList.length);
+    //print(retrievedGroupList.length);
 
-    for (var i = 0; i < retrievedGroupList.length; i++) {
-      group_list.add(retrievedGroupList[i]['groupID']);
-      print('${retrievedGroupList[i]['groupID']}');
-    }
+    //for (var i = 0; i < retrievedGroupList.length; i++) {
+    //  group_list.add(retrievedGroupList[i]['groupID']);
+    //  print('${retrievedGroupList[i]['groupID']}');
+    //}
 
+    group_list = ["Sample 1", "Sample 2"];
     print('$group_list');
 
-    //group_list = ["", ""];
     channel_list = ["Sample 1", "Sample 2"];
 
   }
