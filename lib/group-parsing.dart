@@ -88,15 +88,18 @@ Future <List<Map<String,dynamic>>> groupList(String uid) async
 {
   List<Map<String, dynamic>> userGroupList = [];
   var query = await db.collection("Users").doc(uid).collection("Group List").get();
-  print(query);
-  await db.collection("Users").doc(uid).collection("Group List").get();
 
+  for (var docSnapshot in query.docs) {
+    var groupDocID = docSnapshot.data()["groupID"];
+    var groupDoc = await db.collection("Groups").doc(groupDocID).get();
 
-    for (var docSnapshot in query.docs) {
-      print('${docSnapshot.id} => ${docSnapshot.data()}');
-      userGroupList.add(docSnapshot.data());
-    }
+    print('Found group ${groupDocID}');
+    print('Here is its data: ${groupDoc.data()}');
 
+    userGroupList.add(groupDoc.data()!);
+  }
+
+  print('Found ${userGroupList.length} groups!');
   return userGroupList;
 }
 
@@ -109,10 +112,12 @@ Future<List<Map<String, dynamic>>> channelList(String group) async
   var query = await db.collection("Groups").doc(group).collection("Channels").get();
 
   for (var docSnapshot in query.docs){
-    print('${docSnapshot.id} => ${docSnapshot.data()}');
+    print("Found channel with ID ${docSnapshot.id}");
+    print("Here is its data: ${docSnapshot.data()}");
     groupChannelList.add(docSnapshot.data());
-
   }
+
+  print("Found ${groupChannelList.length} channels.");
   return groupChannelList;
 }
 

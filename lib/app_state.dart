@@ -6,6 +6,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:euphony/group-parsing.dart';
+import 'package:euphony/message-parsing.dart';
 
 
 
@@ -26,22 +27,25 @@ class GroupChannelState extends ChangeNotifier {
 
   Future<void> select_group(int index) async {
     current_group = index;
-    channel_list.clear();
 
-    channel_list = await channelList(group_list[current_group]['groupID']!);
+    init_channels_list();
+
+    //notifyListeners();
   }
 
-  void select_channel(int index) {
+  Future<void> select_channel(int index) async {
     current_channel = index;
 
-    // TODO: Retrieve messages from db. Store them in the message_list variable.
+    message_list = await messageList(
+      group_list[current_group]["groupID"],
+      channel_list[current_channel]["name"]
+    );
 
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> init_groups_list() async {
-    print("-- Fetching groups list");
-    group_list.clear();
+    print("Running AppState.init_groups_list");
     String uid = current_user!.uid;
 
     group_list = await groupList(uid);
@@ -52,9 +56,19 @@ class GroupChannelState extends ChangeNotifier {
     print('$group_list');
     select_group(current_group);
 
-    print("Done fetching groups list");
+    print("Completed AppState.init_groups_list");
 
     //notifyListeners();
+  }
+
+  Future<void> init_channels_list() async {
+    print("Running AppState.init_channels_list");
+
+    channel_list.clear();
+    channel_list = await channelList(group_list[current_group]["groupID"]);
+    select_channel(0);
+
+    print("Completed AppState.init_channels_list");
   }
 
   Future<void> create_group(String newGroupName) async {
@@ -63,9 +77,6 @@ class GroupChannelState extends ChangeNotifier {
 
     newGroup(newGroupName, current_user!.uid);
     await init_groups_list();
-    select_group(group_list.length - 1);
-    newChannel(group_list[current_group]['groupID'], 0, "Announcements");
-    newChannel(group_list[current_group]['groupID'], 0, "General");
 
     notifyListeners();
   }

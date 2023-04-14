@@ -111,8 +111,6 @@ class _MainViewState extends State<MainView> {
 
   @override
   Widget build(BuildContext context) {
-    setState(() {});
-
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         bool wide_display = (constraints.maxWidth >= NARROW_SCREEN_WIDTH);
@@ -192,41 +190,62 @@ class _MainViewState extends State<MainView> {
   Widget buildNavigationRails(BuildContext context, bool wide_display) {
     GroupChannelState appState = Provider.of(context);
     appState.init_groups_list();
+    appState.init_channels_list();
 
-    return FutureBuilder(
-      future: appState.init_groups_list(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
+    return Builder(
+      builder: (BuildContext context) {
         return Row(
             children: [
               SizedBox(
                   width: (wide_display ? 100 : 60),
-                  child: Builder(
-                    builder: (context) {
+                  child: FutureBuilder(
+                    future: appState.init_groups_list(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
-                        return NavigationRail(
-                          extended: false,
-                          destinations: [
-                            for (var group in appState.group_list)
-                              NavigationRailDestination(
-                                  icon: Icon(Icons.group_work),
-                                  label: Text(group["groupID"]!)
-                              )
-                          ],
-                          selectedIndex: appState.current_group,
-                          onDestinationSelected: (value) async {
-                            setState(() {
-                              appState.select_group(value);
-                            });
-                          },
-                          trailing: ElevatedButton(
-                              onPressed: () async {
-                                await _onPressNewGroup();
-                                if (_newGroupName != '') appState.create_group(_newGroupName);
-                                _newGroupName = '';
-                              },
-                              child: Icon(Icons.add)
-                          ),
-                        );
+                        if (appState.group_list.length >= 2) {
+                          return NavigationRail(
+                            extended: false,
+                            destinations: [
+                              for (var group in appState.group_list)
+                                NavigationRailDestination(
+                                    icon: Icon(Icons.group_work),
+                                    label: Text(group["groupID"]!)
+                                )
+                            ],
+                            selectedIndex: appState.current_group,
+                            onDestinationSelected: (value) async {
+                              setState(() {
+                                appState.select_group(value);
+                              });
+                            },
+                            trailing: ElevatedButton(
+                                onPressed: () async {
+                                  await _onPressNewGroup();
+                                  if (_newGroupName != '') appState.create_group(_newGroupName);
+                                  _newGroupName = '';
+                                },
+                                child: Icon(Icons.add)
+                            ),
+                          );
+                        } else {
+                          return Container(
+                            padding: EdgeInsets.all(8),
+                            child: Column(
+                              children: [
+                                Text("It looks like you're not a member of any groups! Click the '+' or wait to be added to a group."),
+                                SizedBox(height: 16),
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      await _onPressNewGroup();
+                                      if (_newGroupName != '') appState.create_group(_newGroupName);
+                                      _newGroupName = '';
+                                    },
+                                    child: Icon(Icons.add)
+                                )
+                              ],
+                            )
+                          );
+                        }
                       } else {
                         return CircularProgressIndicator();
                       }
@@ -263,9 +282,11 @@ class _MainViewState extends State<MainView> {
                       ),
                       Expanded(
                         child: FutureBuilder(
-                          future: appState.select_group(appState.current_group),
+                          future: appState.init_channels_list(),
                           builder: (BuildContext context, AsyncSnapshot snapshot) {
+                            // print("Rebuilding channels pane");
                             if (snapshot.connectionState == ConnectionState.done) {
+                              // print("Building channel nav rail: ${appState.channel_list}");
                               if (appState.channel_list.length >= 2) {
                                 return TabBarView(
                                     children: [
@@ -276,12 +297,14 @@ class _MainViewState extends State<MainView> {
                                               NavigationRailDestination(
                                                   padding: EdgeInsets.all(2),
                                                   icon: Icon(Icons.tag),
-                                                  label: Text(channel)
+                                                  label: Text(channel['name'])
                                               )
                                           ],
                                           selectedIndex: appState.current_channel,
                                           onDestinationSelected: (value) {
-                                            appState.select_channel(value);
+                                            setState(() {
+                                              appState.select_channel(value);
+                                            });
                                           },
                                           trailing: ElevatedButton(
                                               onPressed: () async {
@@ -356,7 +379,6 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
 
   List<Widget> messages = [
   ];
-
   List<Widget> pins = [
 
   ];
@@ -427,29 +449,33 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                       child: Column(
                         children: [
                           Expanded(
-                            child: ListView.builder(
-                              itemCount: appState.message_list.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                  return _ContextMenuRegion(
-                                    contextMenuBuilder: (context, offset) {
-                                      return AdaptiveTextSelectionToolbar.buttonItems(
-                                        anchors: TextSelectionToolbarAnchors(
-                                          primaryAnchor: offset,
-                                        ),
-                                        buttonItems: [
-                                          ContextMenuButtonItem(
-                                            onPressed: () {
-                                              appState.toggle_pin(index);
-                                              ContextMenuController.removeAny();
-                                            },
-                                            label: appState.pinned_list[index] ? "Unpin" : "Pin"
-                                          )
-                                        ],
+                            child: FutureBuilder(
+                              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                                return ListView.builder(
+                                  itemCount: appState.message_list.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                      return _ContextMenuRegion(
+                                        contextMenuBuilder: (context, offset) {
+                                          return AdaptiveTextSelectionToolbar.buttonItems(
+                                            anchors: TextSelectionToolbarAnchors(
+                                              primaryAnchor: offset,
+                                            ),
+                                            buttonItems: [
+                                              ContextMenuButtonItem(
+                                                onPressed: () {
+                                                  appState.toggle_pin(index);
+                                                  ContextMenuController.removeAny();
+                                                },
+                                                label: appState.pinned_list[index] ? "Unpin" : "Pin"
+                                              )
+                                            ],
+                                          );
+                                        },
+                                        child: appState.message_list[index]
                                       );
-                                    },
-                                    child: appState.message_list[index]
-                                  );
-                                }
+                                    }
+                                );
+                              }
                             )
                           ),
                           Row(
