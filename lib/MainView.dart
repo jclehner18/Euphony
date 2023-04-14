@@ -16,9 +16,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+
 import 'package:euphony/message-parsing.dart';
-
-
+import 'package:euphony/group-parsing.dart';
 import 'package:euphony/app_state.dart';
 import 'package:euphony/calendar.dart';
 
@@ -37,7 +38,6 @@ class _MainViewState extends State<MainView> {
 
   String _newChannelName = '';
   String _newGroupName = '';
-
 
   Future<void> _onPressNewChannel() async {
     await showDialog(
@@ -111,10 +111,7 @@ class _MainViewState extends State<MainView> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<GroupChannelState>();
-    appState.init_groups_list();
-
-    print("Here's what MainView.build sees: ${appState.group_list}");
+    setState(() {});
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
@@ -151,104 +148,7 @@ class _MainViewState extends State<MainView> {
             body: Row(
               children: [
                 SafeArea(
-                  child: Row(
-                    children: [
-                      SizedBox(
-                          width: (wide_display ? 100 : 60),
-                          child: NavigationRail(
-                            extended: false,
-                            destinations: [
-                              for (var group in appState.group_list)
-                                NavigationRailDestination(
-                                    icon: Icon(Icons.group_work),
-                                    label: Text(group)
-                                )
-                            ],
-                            selectedIndex: appState.current_group,
-                            onDestinationSelected: (value) {
-                              appState.select_group(value);
-                            },
-                            trailing: ElevatedButton(
-                              onPressed: () async {
-                                await _onPressNewGroup();
-                                if (_newGroupName != '') appState.create_group(_newGroupName);
-                                _newGroupName = '';
-                              },
-                              child: Icon(Icons.add)
-                            ),
-                          )
-                      ),
-                      DefaultTabController(
-                        length: 2,
-                        child: SizedBox(
-                          width: (wide_display ? 220 : 90),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: (wide_display ? null : 50),
-                                child: TabBar(
-                                    labelColor: Theme
-                                        .of(context)
-                                        .focusColor,
-                                    tabs: [
-                                      Tab(
-                                          icon: Icon(Icons.list),
-                                          text: (wide_display
-                                              ? "Channels"
-                                              : null)
-                                      ),
-                                      Tab(
-                                          icon: Icon(Icons.people),
-                                          text: (wide_display
-                                              ? "Members"
-                                              : null)
-                                      )
-                                    ]
-                                ),
-                              ),
-                              Expanded(
-                                child: TabBarView(
-                                    children: [
-                                      NavigationRail(
-                                          extended: wide_display,
-                                          destinations: [
-                                            for (var channel in appState.channel_list)
-                                              NavigationRailDestination(
-                                                  padding: EdgeInsets.all(2),
-                                                  icon: Icon(Icons.tag),
-                                                  label: Text(channel)
-                                              )
-                                          ],
-                                          selectedIndex: appState
-                                              .current_channel,
-                                          onDestinationSelected: (value) {
-                                            appState.select_channel(value);
-                                          },
-                                          trailing: ElevatedButton(
-                                              onPressed: () async {
-                                                await _onPressNewChannel();
-                                                if (_newChannelName != '') appState.create_channel(_newChannelName);
-                                                _newChannelName = '';
-                                              },
-                                              child: Text("New Channel")
-                                          )
-                                      ),
-                                      ListView.builder(
-                                        itemCount: 3,
-                                        itemBuilder: (context, value) {
-                                          return GroupMemberCard();
-                                          // TODO: Get members from db
-                                        },
-                                      )
-                                    ]
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ]
-                  ),
+                  child: buildNavigationRails(context, wide_display),
                 ),
                 Expanded(
                     child: ChannelPane()
@@ -281,101 +181,7 @@ class _MainViewState extends State<MainView> {
             ),
             body: ChannelPane(),
             drawer: Drawer(
-              child: Row(
-                  children: [
-                    SizedBox(
-                        width: 60,
-                        child: NavigationRail(
-                          extended: false,
-                          destinations: [
-                            for (var group in appState.group_list)
-                              NavigationRailDestination(
-                                  icon: Icon(Icons.group_work),
-                                  label: Text(group)
-                              )
-                          ],
-                          selectedIndex: appState.current_group,
-                          onDestinationSelected: (value) {
-                            appState.select_group(value);
-                          },
-                          trailing: ElevatedButton(
-                            onPressed: () async {
-                              await _onPressNewGroup();
-                              if (_newGroupName != '') appState.create_channel(_newGroupName);
-                              _newGroupName = '';
-                            },
-                            child: Icon(Icons.add)
-                          )
-                        )
-                    ),
-                    DefaultTabController(
-                      length: 2,
-                      child: SizedBox(
-                        width: 220,
-                        child: Column(
-                          children: [
-                            TabBar(
-                                labelColor: Theme
-                                    .of(context)
-                                    .focusColor,
-                                tabs: [
-                                  Tab(
-                                      icon: Icon(Icons.list),
-                                      text: (wide_display
-                                          ? "Channels"
-                                          : null)
-                                  ),
-                                  Tab(
-                                      icon: Icon(Icons.people),
-                                      text: (wide_display
-                                          ? "Members"
-                                          : null)
-                                  )
-                                ]
-                            ),
-                            Expanded(
-                              child: TabBarView(
-                                  children: [
-                                    NavigationRail(
-                                        extended: true,
-                                        destinations: [
-                                          for (var channel in appState.channel_list)
-                                            NavigationRailDestination(
-                                                padding: EdgeInsets.all(2),
-                                                icon: Icon(Icons.tag),
-                                                label: Text(channel)
-                                            )
-                                        ],
-                                        selectedIndex: appState
-                                            .current_channel,
-                                        onDestinationSelected: (value) {
-                                          appState.select_channel(value);
-                                        },
-                                        trailing: ElevatedButton(
-                                            onPressed: () async {
-                                              await _onPressNewChannel();
-                                              if (_newChannelName != '') appState.create_channel(_newChannelName);
-                                              _newChannelName = '';
-                                            },
-                                            child: Text("New Channel")
-                                        )
-                                    ),
-                                    ListView.builder(
-                                      itemCount: 3,
-                                      itemBuilder: (context, value) {
-                                        return GroupMemberCard();
-                                        // TODO: Get members from db
-                                      },
-                                    )
-                                  ]
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ]
-              ),
+              child: buildNavigationRails(context, wide_display),
             )
           );
         }
@@ -383,109 +189,153 @@ class _MainViewState extends State<MainView> {
     );
   }
 
-  Future<Widget> buildNavigationRails(BuildContext context, bool wide_display) async {
-    var appState = context.watch()<GroupChannelState>();
-    await appState.init_groups_list();
+  Widget buildNavigationRails(BuildContext context, bool wide_display) {
+    GroupChannelState appState = Provider.of(context);
+    appState.init_groups_list();
 
-    return SafeArea(
-      child: Row(
-          children: [
-            SizedBox(
-                width: (wide_display ? 100 : 60),
-                child: NavigationRail(
-                  extended: false,
-                  destinations: [
-                    for (var group in appState.group_list)
-                      NavigationRailDestination(
-                          icon: Icon(Icons.group_work),
-                          label: Text(group)
-                      )
-                  ],
-                  selectedIndex: appState.current_group,
-                  onDestinationSelected: (value) {
-                    appState.select_group(value);
-                  },
-                  trailing: ElevatedButton(
-                      onPressed: () async {
-                        await _onPressNewGroup();
-                        if (_newGroupName != '') appState.create_group(_newGroupName);
-                        _newGroupName = '';
-                      },
-                      child: Icon(Icons.add)
-                  ),
-                )
-            ),
-            DefaultTabController(
-              length: 2,
-              child: SizedBox(
-                width: (wide_display ? 220 : 90),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: (wide_display ? null : 50),
-                      child: TabBar(
-                          labelColor: Theme
-                              .of(context)
-                              .focusColor,
-                          tabs: [
-                            Tab(
-                                icon: Icon(Icons.list),
-                                text: (wide_display
-                                    ? "Channels"
-                                    : null)
-                            ),
-                            Tab(
-                                icon: Icon(Icons.people),
-                                text: (wide_display
-                                    ? "Members"
-                                    : null)
-                            )
-                          ]
-                      ),
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                          children: [
-                            NavigationRail(
-                                extended: wide_display,
-                                destinations: [
-                                  for (var channel in appState.channel_list)
-                                    NavigationRailDestination(
-                                        padding: EdgeInsets.all(2),
-                                        icon: Icon(Icons.tag),
-                                        label: Text(channel)
-                                    )
-                                ],
-                                selectedIndex: appState
-                                    .current_channel,
-                                onDestinationSelected: (value) {
-                                  appState.select_channel(value);
-                                },
-                                trailing: ElevatedButton(
-                                    onPressed: () async {
-                                      await _onPressNewChannel();
-                                      if (_newChannelName != '') appState.create_channel(_newChannelName);
-                                      _newChannelName = '';
-                                    },
-                                    child: Text("New Channel")
-                                )
-                            ),
-                            ListView.builder(
-                              itemCount: 3,
-                              itemBuilder: (context, value) {
-                                return GroupMemberCard();
-                                // TODO: Get members from db
+    return FutureBuilder(
+      future: appState.init_groups_list(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        return Row(
+            children: [
+              SizedBox(
+                  width: (wide_display ? 100 : 60),
+                  child: Builder(
+                    builder: (context) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return NavigationRail(
+                          extended: false,
+                          destinations: [
+                            for (var group in appState.group_list)
+                              NavigationRailDestination(
+                                  icon: Icon(Icons.group_work),
+                                  label: Text(group["groupID"]!)
+                              )
+                          ],
+                          selectedIndex: appState.current_group,
+                          onDestinationSelected: (value) async {
+                            setState(() {
+                              appState.select_group(value);
+                            });
+                          },
+                          trailing: ElevatedButton(
+                              onPressed: () async {
+                                await _onPressNewGroup();
+                                if (_newGroupName != '') appState.create_group(_newGroupName);
+                                _newGroupName = '';
                               },
-                            )
-                          ]
-                      ),
-                    ),
-                  ],
-                ),
+                              child: Icon(Icons.add)
+                          ),
+                        );
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    }
+                  )
               ),
-            )
-          ]
-      ),
+              DefaultTabController(
+                length: 2,
+                child: SizedBox(
+                  width: (wide_display ? 220 : 90),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: (wide_display ? null : 50),
+                        child: TabBar(
+                            labelColor: Theme
+                                .of(context)
+                                .focusColor,
+                            tabs: [
+                              Tab(
+                                  icon: Icon(Icons.list),
+                                  text: (wide_display
+                                      ? "Channels"
+                                      : null)
+                              ),
+                              Tab(
+                                  icon: Icon(Icons.people),
+                                  text: (wide_display
+                                      ? "Members"
+                                      : null)
+                              )
+                            ]
+                        ),
+                      ),
+                      Expanded(
+                        child: FutureBuilder(
+                          future: appState.select_group(appState.current_group),
+                          builder: (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.connectionState == ConnectionState.done) {
+                              if (appState.channel_list.length >= 2) {
+                                return TabBarView(
+                                    children: [
+                                      NavigationRail(
+                                          extended: wide_display,
+                                          destinations: [
+                                            for (var channel in appState.channel_list)
+                                              NavigationRailDestination(
+                                                  padding: EdgeInsets.all(2),
+                                                  icon: Icon(Icons.tag),
+                                                  label: Text(channel)
+                                              )
+                                          ],
+                                          selectedIndex: appState.current_channel,
+                                          onDestinationSelected: (value) {
+                                            appState.select_channel(value);
+                                          },
+                                          trailing: ElevatedButton(
+                                              onPressed: () async {
+                                                await _onPressNewChannel();
+                                                if (_newChannelName != '') appState.create_channel(_newChannelName);
+                                                _newChannelName = '';
+                                              },
+                                              child: Text("New Channel")
+                                          )
+                                      ),
+                                      ListView.builder(
+                                        itemCount: 3,
+                                        itemBuilder: (context, value) {
+                                          return GroupMemberCard();
+                                          // TODO: Get members from db
+                                        },
+                                      )
+                                    ]
+                                );
+                              } else {
+                                return Container(
+                                  alignment: Alignment.topCenter,
+                                  padding: EdgeInsets.all(8),
+                                  child: Column(
+                                    children: [
+                                      Text("Looks like there's nothing here! Click 'Create Channel' to get started."),
+                                      SizedBox(
+                                        height: 16
+                                      ),
+                                      ElevatedButton(
+                                          onPressed: () async {
+                                            await _onPressNewChannel();
+                                            if (_newChannelName != '') appState.create_channel(_newChannelName);
+                                            _newChannelName = '';
+                                          },
+                                          child: Text("New Channel")
+                                      )
+                                    ],
+                                  )
+                                );
+                              }
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          }
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ]
+        );
+      }
     );
 
     throw UnimplementedError();

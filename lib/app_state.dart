@@ -15,23 +15,20 @@ class GroupChannelState extends ChangeNotifier {
   var num_groups = 2;
   var current_group = 0;
   var current_channel = 0;
-  var group_list = [];
+  List<Map<String, dynamic>> group_list = [
+    {"groupID": " "},
+    {"groupID": " "},
+  ];
   var channel_list = [];
   var message_list = [];
   var pinned_list = [];
 
 
-  void select_group(int index) {
+  Future<void> select_group(int index) async {
     current_group = index;
     channel_list.clear();
 
-    //List retrievedChannelList = channelList(group_list[current_group]);
-
-    //for (var i = 0; i < retrievedChannelList.length; i++) {
-    //  channel_list.add(retrievedChannelList[i]);
-    //}
-
-    notifyListeners();
+    channel_list = await channelList(group_list[current_group]['groupID']!);
   }
 
   void select_channel(int index) {
@@ -43,30 +40,32 @@ class GroupChannelState extends ChangeNotifier {
   }
 
   Future<void> init_groups_list() async {
+    print("-- Fetching groups list");
     group_list.clear();
     String uid = current_user!.uid;
 
-    //var retrievedGroupList = await groupList(uid);
+    group_list = await groupList(uid);
 
-    //print(retrievedGroupList.length);
+    print(group_list.length);
 
-    //for (var i = 0; i < retrievedGroupList.length; i++) {
-    //  group_list.add(retrievedGroupList[i]['groupID']);
-    //  print('${retrievedGroupList[i]['groupID']}');
-    //}
-
-    group_list = ["Sample 1", "Sample 2"];
+    //group_list = ["Sample 1", "Sample 2"];
     print('$group_list');
+    select_group(current_group);
 
-    channel_list = ["Sample 1", "Sample 2"];
+    print("Done fetching groups list");
 
+    //notifyListeners();
   }
 
-  void create_group(String newGroupName) {
+  Future<void> create_group(String newGroupName) async {
     // TODO: Remove print
     print("Created group $newGroupName");
 
     newGroup(newGroupName, current_user!.uid);
+    await init_groups_list();
+    select_group(group_list.length - 1);
+    newChannel(group_list[current_group]['groupID'], 0, "Announcements");
+    newChannel(group_list[current_group]['groupID'], 0, "General");
 
     notifyListeners();
   }
@@ -75,7 +74,7 @@ class GroupChannelState extends ChangeNotifier {
     // TODO: Remove print
     print("Created channel $newChannelName");
 
-    newChannel(group_list[current_group]['groupID'], 0, newChannelName);
+    newChannel(group_list[current_group]['groupID']!, 0, newChannelName);
 
     notifyListeners();
   }
