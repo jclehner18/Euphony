@@ -89,7 +89,7 @@ Future<void> pinMsg(String group, String channel, String message, bool pin) asyn
       .collection('Messages')
       .doc(message);
   await msgToPin
-    .update({"isPin": pin})
+    .update({"isPin": true})
     .onError((e, _) => print ("Error pinning document: $e"));
 }
 
@@ -108,7 +108,7 @@ Future<List<Map<String, dynamic>>> getPinnedMessages(String group, String channe
 
 //this is used to send new messages into the database using the current channel collection that we are in
 //CONFIRM WORKS
-void sendNewMsg(String group,String channel, String msg, String uID)
+sendNewMsg(String group,String channel, String msg, String uID)
 {
 
   final newMsg ={
