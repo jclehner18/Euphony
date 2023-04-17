@@ -43,15 +43,23 @@ Future<String> listenForMessage(String group, String channel) async
 
 //this will pull all the messages from a channel
 //CONFIRM WORKS
-Future<List<Map<String, dynamic>>> messageList(String group, String channel) async
-{
-  List<Map<String,dynamic>> channelMessageList = [];
-  var query = await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").get();
-  for (var docSnapshot in query.docs){
-    print('${docSnapshot.id} => ${docSnapshot.data()}');
-    channelMessageList.add(docSnapshot.data());
+Future<List<Map<String, dynamic>>> messageList(String group, String channel) async {
+  print("Fetching messages from database...");
 
+  List<Map<String,dynamic>> channelMessageList = [];
+  var query = await db
+      .collection("Groups").doc(group)
+      .collection("Channels").doc(channel)
+      .collection("Messages")
+      .orderBy("time")
+      .get();
+
+  for (var docSnapshot in query.docs){
+    print('Found message ${docSnapshot.id} with contents ${docSnapshot.data()['messageBody']}');
+    channelMessageList.add(docSnapshot.data());
   }
+
+  print("Retrieved messages from database.");
   return channelMessageList;
 }
 
@@ -95,7 +103,7 @@ Future<void> pinMsg(String group, String channel, String message, bool pin) asyn
 
 //this fxn will grab a list of all pinned messages
 //CONFIRM WORKS
-Future<List<Map<String, dynamic>>> getPinnedMessages(String group, String channel) async{
+Future<List<Map<String, dynamic>>> getPinnedMessages(String group, String channel) async {
   List<Map<String,dynamic>> pinMessageList = [];
   var query = await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").where("isPin",isEqualTo: true).get();
   for (var docSnapshot in query.docs){
@@ -108,7 +116,7 @@ Future<List<Map<String, dynamic>>> getPinnedMessages(String group, String channe
 
 //this is used to send new messages into the database using the current channel collection that we are in
 //CONFIRM WORKS
-sendNewMsg(String group,String channel, String msg, String uID)
+sendNewMsg(String group, String channel, String msg, String uID)
 {
 
   final newMsg ={

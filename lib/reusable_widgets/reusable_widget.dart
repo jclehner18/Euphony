@@ -66,22 +66,22 @@ Container FireBaseButton(
 
 
 class MessageCard extends StatelessWidget {
-  static const SampleMessageSenderProfile = Image(image: NetworkImage("https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg"));
+  static const SampleMessageSenderProfile = Icon(Icons.person);
   static const SampleMessageSender = "Sample User";
   static const SampleMessageTimestamp = "12:03";
   static const SampleMessage = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
   const MessageCard({super.key,
-    this.MessageBody = SampleMessage,
-    this.MessageSender = SampleMessageSender,
-    this.MessageSenderProfile = SampleMessageSenderProfile,
-    this.MessageTimestamp = MessageCard.SampleMessageTimestamp
+    this.messageBody = SampleMessage,
+    this.messageSender = SampleMessageSender,
+    this.messageSenderProfile = SampleMessageSenderProfile,
+    this.messageTimestamp = MessageCard.SampleMessageTimestamp
   });
 
-  final String MessageSender;
-  final Image MessageSenderProfile;
-  final String MessageTimestamp;
-  final String MessageBody;
+  final String messageSender;
+  final Icon messageSenderProfile;
+  final String messageTimestamp;
+  final String messageBody;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +102,7 @@ class MessageCard extends StatelessWidget {
               child: SizedBox(
                 height: 32,
                 width: 32,
-                child: MessageSenderProfile,
+                child: messageSenderProfile,
               ),
             ),
             Expanded(
@@ -111,7 +111,7 @@ class MessageCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        MessageSender,
+                        messageSender,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
 
@@ -119,7 +119,7 @@ class MessageCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        MessageTimestamp,
+                        messageTimestamp,
                         style: TextStyle(
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.w300,
@@ -133,7 +133,7 @@ class MessageCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                          MessageBody,
+                          messageBody,
                           style: TextStyle()
                       ),
                         ),

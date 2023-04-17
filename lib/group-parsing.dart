@@ -7,17 +7,13 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 void newGroup(String name, String uID)
 {
 
-  final newGroup = db
-      .collection('Groups')
-      .doc();
+  final newGroup = db.collection('Groups').doc();
 
   newGroup.set({
     "name":name,
     "owner":uID,
     "groupID":newGroup.id
   });
-
-  FirebaseFirestore.instance.collection('Groups').doc().collection('Channels');
 
   db
     .collection('Users')
@@ -35,18 +31,14 @@ void newGroup(String name, String uID)
 //CONFIRM WORKS
 void newChannel(String group, int type, String channelName)
 {
-  final newChan ={
-    "type": type,
-    "name": channelName
-  };
+  final newChannel = db.collection("Groups").doc(group).collection("Channels").doc();
 
-  db
-      .collection('Groups')
-      .doc(group)
-      .collection('Channels')
-      .doc()
-      .set(newChan)
-      .onError((e, _) => print("Error writing document $e"));
+  newChannel.set({
+    "name": channelName,
+    "type": type,
+    "channelID": newChannel.id
+  });
+
 }
 
 //this fxn will create a new event to be used in the calendar
