@@ -155,7 +155,6 @@ class _MainViewState extends State<MainView> {
     for (var channel in db_list) {
       channel_list.add(Channel(name: channel['name'], channelID: channel['channelID']));
     }
-
   }
 
   Future<void> _createGroup(String newGroupName) async {
@@ -222,7 +221,10 @@ class _MainViewState extends State<MainView> {
                   child: buildNavigationRails(context, wide_display),
                 ),
                 Expanded(
-                    child: ChannelPane()
+                    child: ChannelPane(
+                      groupID: group_list[current_group].groupID,
+                      channelID: channel_list[current_channel].channelID
+                    )
                 )
               ],
             ),
@@ -250,7 +252,10 @@ class _MainViewState extends State<MainView> {
                 ),
               ]
             ),
-            body: ChannelPane(),
+            body: ChannelPane(
+              groupID: group_list[current_group].groupID,
+              channelID: channel_list[current_channel].channelID
+            ),
             drawer: Drawer(
               child: buildNavigationRails(context, wide_display),
             )
@@ -261,7 +266,7 @@ class _MainViewState extends State<MainView> {
   }
 
   Widget buildNavigationRails(BuildContext context, bool wide_display) {
-    GroupChannelState appState = Provider.of(context);
+    // GroupChannelState appState = Provider.of(context);
     // appState.init_groups_list();
     // appState.init_channels_list();
 
@@ -445,7 +450,9 @@ class _MainViewState extends State<MainView> {
 
 
 class ChannelPane extends StatefulWidget {
-  const ChannelPane({super.key});
+  ChannelPane({super.key, required this.channelID, required this.groupID});
+  String channelID;
+  String groupID;
 
   @override
   State<ChannelPane> createState() => _ChannelPaneState();
@@ -454,25 +461,37 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
   late TabController _tab_controller;
   late TextEditingController _message_body_controller;
 
-  List<Widget> messages = [
-  ];
-  List<Widget> pins = [
+  List<Message> message_list = [];
+  List<Message> pinned_message_list = [];
 
-  ];
+  Future<void> _init_message_list() async {
+    var db_list = await messageList(widget.groupID, widget.channelID);
 
-
-  sendMessage(String message){
-    setState(() {
-      messages.add(
-          MessageCard(
-              messageBody: message,
-              messageTimestamp: Timestamp.now().toDate().toLocal().toString(),
-              messageSender: "dsurgenavic"
-          )
+    message_list.clear();
+    for (var messageDoc in db_list) {
+      Message message = Message(
+          body: messageDoc["messageBody"],
+          timestamp: messageDoc["time"],
+          senderID: messageDoc["uID"]
       );
-    });
-    getDoc('gEsXF5sWSU4BKZpBZXgq','HW3GaiDPb0kcf4aJP6pj','wDHaNCTcWWeSsihuBIJ2');
-    ////Groups/gEsXF5sWSU4BKZpBZXgq/Channel/HW3GaiDPb0kcf4aJP6pj/Messages/wDHaNCTcWWeSsihuBIJ2
+      message_list.add(message);
+      if (messageDoc["isPin"]) {
+        pinned_message_list.add(message);
+      }
+    }
+  }
+
+  Future<void> _toggle_pin(int index) async {
+
+  }
+
+  sendMessage(String message) {
+    sendNewMsg(
+      widget.groupID,
+      widget.channelID,
+      message,
+      FirebaseAuth.instance.currentUser!.uid
+    );
     _message_body_controller.clear();
   }
 
@@ -482,7 +501,7 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
     super.initState();
     _tab_controller = TabController(length: 3, vsync: this);
     _message_body_controller = TextEditingController();
-    messages = []; // TODO: replace this line with fetching messages from database.
+    message_list = [];
   }
 
   @override
@@ -493,7 +512,7 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<GroupChannelState>();
+    // var appState = context.watch<GroupChannelState>();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -527,18 +546,18 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                         children: [
                           Expanded(
                             child: FutureBuilder(
-                              future: appState.init_message_list(),
+                              future: _init_message_list(),
                               builder: (BuildContext context, AsyncSnapshot snapshot) {
                                 if (snapshot.connectionState == ConnectionState.done) {
                                   // print("Building message list in group ${appState.group_list[appState.current_group]["name"]}, channel ${appState.channel_list[appState.current_channel]["name"]}");
                                   print("Retrieved the following messages: ");
-                                  for (var message in appState.message_list) {
+                                  for (var message in message_list) {
                                     print("-- ${message.body}");
                                   }
                                   return ListView.builder(
-                                      itemCount: appState.message_list.length,
+                                      itemCount: message_list.length,
                                       itemBuilder: (BuildContext context, int index) {
-                                        var message = appState.message_list[index];
+                                        var message = message_list[index];
                                         return _ContextMenuRegion(
                                             contextMenuBuilder: (context, offset) {
                                               return AdaptiveTextSelectionToolbar.buttonItems(
@@ -548,10 +567,10 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                                                 buttonItems: [
                                                   ContextMenuButtonItem(
                                                       onPressed: () {
-                                                        appState.toggle_pin(index);
+                                                        _toggle_pin(index);
                                                         ContextMenuController.removeAny();
                                                       },
-                                                      label: appState.pinned_list.contains(message) ? "Unpin" : "Pin"
+                                                      label: pinned_message_list.contains(message) ? "Unpin" : "Pin"
                                                   )
                                                 ],
                                               );
@@ -583,7 +602,6 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                                       controller: _message_body_controller,
                                       onSubmitted: (value) {
                                         sendMessage(value);
-                                        appState.send_message(value);
                                       }
                                   ),
                                 ),
@@ -596,7 +614,6 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                                   print("Sent Message");
                                   */
                                     sendMessage(_message_body_controller.text);
-                                    appState.send_message(_message_body_controller.text);
                                   },
                                   child: const Icon(Icons.send),
                                 ),
@@ -622,9 +639,9 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                     ),
                     Container(
                       child: ListView.builder(
-                        itemCount: appState.pinned_list.length,
+                        itemCount: pinned_message_list.length,
                         itemBuilder: (BuildContext context, int index) {
-                          var message = appState.pinned_list[index];
+                          var message = pinned_message_list[index];
                           return _ContextMenuRegion(
                               contextMenuBuilder: (context, offset) {
                                 return AdaptiveTextSelectionToolbar.buttonItems(
@@ -634,7 +651,7 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
                                   buttonItems: [
                                     ContextMenuButtonItem(
                                         onPressed: () {
-                                          appState.toggle_pin(index);
+                                          _toggle_pin(index);
                                           ContextMenuController.removeAny();
                                         },
                                         label: "Unpin"
