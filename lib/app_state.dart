@@ -7,6 +7,8 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:euphony/group-parsing.dart';
 
+import 'package:euphony/message-parsing.dart';
+
 
 
 class GroupChannelState extends ChangeNotifier {
@@ -91,11 +93,14 @@ class GroupChannelState extends ChangeNotifier {
     print("> $body");
 
     // TODO: Connect to db
+    sendNewMsg(group_list[current_group]['groupID'], channel_list[current_channel]['channelID'], body, current_user!.uid);
   }
 
   void toggle_pin(int index) {
 
     pinned_list.add(message_list[index]);
+    
+    pinMsg(group_list[current_group]['groupID'], channel_list[current_channel], message_list[index], true);
 
     notifyListeners();
   }
