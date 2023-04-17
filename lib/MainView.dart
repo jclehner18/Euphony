@@ -114,7 +114,7 @@ class _MainViewState extends State<MainView> {
     );
   }
 
-  Future<void> _init_groups_list() async {
+  Future<void> _initGroupsList() async {
     var db_list = await groupList(current_user.uid);
 
     print("Fetched ${group_list.length} groups");
@@ -128,27 +128,58 @@ class _MainViewState extends State<MainView> {
       ));
     }
 
+    _initChannelsList();
+
     print('$group_list');
   }
 
-  Future<void> _init_channels_list() async {
-    var db_list = await channelList(group_list[current_group].groupID);
+  Future<void> _initChannelsList() async {
+    /*
+    for (var group in group_list) {
+      var db_list = await channelList(group.groupID);
 
-    channel_list.clear();
+      // for (var channel in db_list) {
+      //  group.channels.add(Channel(
+      //    name: channel['name'],
+      //    channelID: channel['channelID']
+      //  ));
+      // }
 
-    for (var channel in db_list) {
-      channel_list.add(Channel(
-        name: channel['name'],
-        channelID: channel['channelID']
-      ));
+      print("Added to group ${group.name} the following channels: ${group.channels}");
+
     }
+    */
+
+    var db_list = await channelList(group_list[current_group].groupID);
+    channel_list.clear();
+    for (var channel in db_list) {
+      channel_list.add(Channel(name: channel['name'], channelID: channel['channelID']));
+    }
+
+  }
+
+  Future<void> _createGroup(String newGroupName) async {
+    Group new_group = await newGroup(newGroupName, current_user.uid);
+    group_list.add(new_group);
+    _createChannel(new_group.groupID, "General");
+    setState(
+      () {
+        current_group = group_list.length - 1;
+      }
+    );
+  }
+
+  Future<void> _createChannel(String groupID, String newChannelName) async {
+    Channel new_channel = await newChannel(groupID, 0, newChannelName);
+    setState(() {
+      group_list[current_group].channels.add(new_channel);
+      current_channel = group_list[current_group].channels.length - 1;
+    });
   }
 
   @override
   void initState() {
-    _init_groups_list();
-    _init_channels_list();
-
+    _initGroupsList();
     super.initState();
   }
 
@@ -241,7 +272,7 @@ class _MainViewState extends State<MainView> {
               SizedBox(
                   width: (wide_display ? 100 : 60),
                   child: FutureBuilder(
-                    future: _init_groups_list(),
+                    future: _initGroupsList(),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (group_list.length >= 2) {
@@ -263,7 +294,7 @@ class _MainViewState extends State<MainView> {
                             trailing: ElevatedButton(
                                 onPressed: () async {
                                   await _onPressNewGroup();
-                                  if (_newGroupName != '') appState.create_group(_newGroupName);
+                                  if (_newGroupName != '') _createGroup(_newGroupName);
                                   _newGroupName = '';
                                 },
                                 child: Icon(Icons.add)
@@ -279,7 +310,7 @@ class _MainViewState extends State<MainView> {
                                 ElevatedButton(
                                     onPressed: () async {
                                       await _onPressNewGroup();
-                                      if (_newGroupName != '') appState.create_group(_newGroupName);
+                                      if (_newGroupName != '') _createGroup(_newGroupName);
                                       _newGroupName = '';
                                     },
                                     child: Icon(Icons.add)
@@ -324,47 +355,49 @@ class _MainViewState extends State<MainView> {
                       ),
                       Expanded(
                         child: FutureBuilder(
-                          future: _init_channels_list(),
+                          future: _initChannelsList(),
                           builder: (BuildContext context, AsyncSnapshot snapshot) {
                             // print("Rebuilding channels pane");
                             if (snapshot.connectionState == ConnectionState.done) {
                               // print("Building channel nav rail: ${appState.channel_list}");
                               if (channel_list.length >= 2) {
                                 return TabBarView(
-                                    children: [
-                                      NavigationRail(
-                                          extended: wide_display,
-                                          destinations: [
-                                            for (var channel in channel_list)
-                                              NavigationRailDestination(
-                                                  padding: EdgeInsets.all(2),
-                                                  icon: Icon(Icons.tag),
-                                                  label: Text(channel.name)
-                                              )
-                                          ],
-                                          selectedIndex: current_channel,
-                                          onDestinationSelected: (value) async {
-                                            setState(() {
-                                              current_channel = value;
-                                            });
-                                          },
-                                          trailing: ElevatedButton(
-                                              onPressed: () async {
-                                                await _onPressNewChannel();
-                                                if (_newChannelName != '') appState.create_channel(_newChannelName);
-                                                _newChannelName = '';
-                                              },
-                                              child: Text("New Channel")
+                                  children: [
+                                    NavigationRail(
+                                      extended: wide_display,
+                                      destinations: [
+                                        for (var channel in channel_list)
+                                          NavigationRailDestination(
+                                              padding: EdgeInsets.all(2),
+                                              icon: Icon(Icons.tag),
+                                              label: Text(channel.name)
                                           )
-                                      ),
-                                      ListView.builder(
-                                        itemCount: 3,
-                                        itemBuilder: (context, value) {
-                                          return GroupMemberCard();
-                                          // TODO: Get members from db
+                                      ],
+                                      selectedIndex: current_channel,
+                                      onDestinationSelected: (value) async {
+                                        setState(() {
+                                          current_channel = value;
+                                        });
+                                      },
+                                      trailing: ElevatedButton(
+                                        onPressed: () async {
+                                          await _onPressNewChannel();
+                                          if (_newChannelName != '') {
+                                            _createChannel(group_list[current_group].groupID, _newChannelName);
+                                          }
+                                          _newChannelName = '';
                                         },
+                                        child: Text("New Channel")
                                       )
-                                    ]
+                                    ),
+                                    ListView.builder(
+                                      itemCount: 3,
+                                      itemBuilder: (context, value) {
+                                        return GroupMemberCard();
+                                        // TODO: Get members from db
+                                      },
+                                    )
+                                  ]
                                 );
                               } else {
                                 return Container(
@@ -377,12 +410,14 @@ class _MainViewState extends State<MainView> {
                                         height: 16
                                       ),
                                       ElevatedButton(
-                                          onPressed: () async {
-                                            await _onPressNewChannel();
-                                            if (_newChannelName != '') appState.create_channel(_newChannelName);
-                                            _newChannelName = '';
-                                          },
-                                          child: Text("New Channel")
+                                        onPressed: () async {
+                                          await _onPressNewChannel();
+                                          if (_newChannelName != '') {
+                                            _createChannel(group_list[current_group].groupID, _newChannelName);
+                                          }
+                                          _newChannelName = '';
+                                        },
+                                        child: Text("New Channel")
                                       )
                                     ],
                                   )

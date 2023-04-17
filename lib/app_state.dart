@@ -102,7 +102,7 @@ class GroupChannelState extends ChangeNotifier {
     print("Finished creating group $newGroupName");
   }
 
-  void create_channel(String newChannelName) {
+  Future<void> create_channel(String newChannelName) async {
     // TODO: Remove print
     print("Created channel $newChannelName");
 

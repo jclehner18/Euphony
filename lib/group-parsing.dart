@@ -1,21 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'app_state.dart';
+
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 //creates a new group giving itself a name and group id, as well as add it to the creator's group list
 //CONFIRM WORKS
-void newGroup(String name, String uID)
-{
-
+Future<Group> newGroup(String name, String uID) async {
   final newGroup = db.collection('Groups').doc();
 
-  newGroup.set({
+  await newGroup.set({
     "name":name,
     "owner":uID,
     "groupID":newGroup.id
   });
 
-  db
+  await db
     .collection('Users')
     .doc(uID)
     .collection("Group List")
@@ -24,20 +24,23 @@ void newGroup(String name, String uID)
     "groupID": newGroup.id
   }).onError((e, _) => print("Error adding document to user group list: $e"));
 
+  return Group(name: name, groupID: newGroup.id);
+
 }
 
 
 //creates a new channel given a group, a type and a name for the channel
 //CONFIRM WORKS
-void newChannel(String group, int type, String channelName)
-{
+Future<Channel> newChannel(String group, int type, String channelName) async {
   final newChannel = db.collection("Groups").doc(group).collection("Channels").doc();
 
-  newChannel.set({
+  await newChannel.set({
     "name": channelName,
     "type": type,
     "channelID": newChannel.id
   });
+
+  return Channel(name: channelName, channelID: newChannel.id);
 
 }
 
