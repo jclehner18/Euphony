@@ -1,25 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'app_state.dart';
+
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 //creates a new group giving itself a name and group id, as well as add it to the creator's group list
 //CONFIRM WORKS
-void newGroup(String name, String uID)
-{
+Future<Group> newGroup(String name, String uID) async {
+  final newGroup = db.collection('Groups').doc();
 
-  final newGroup = db
-      .collection('Groups')
-      .doc();
-
-  newGroup.set({
+  await newGroup.set({
     "name":name,
     "owner":uID,
     "groupID":newGroup.id
   });
 
-  FirebaseFirestore.instance.collection('Groups').doc().collection('Channels');
-
-  db
+  await db
     .collection('Users')
     .doc(uID)
     .collection("Group List")
@@ -28,25 +24,24 @@ void newGroup(String name, String uID)
     "groupID": newGroup.id
   }).onError((e, _) => print("Error adding document to user group list: $e"));
 
+  return Group(name: name, groupID: newGroup.id);
+
 }
 
 
 //creates a new channel given a group, a type and a name for the channel
 //CONFIRM WORKS
-void newChannel(String group, int type, String channelName)
-{
-  final newChan ={
-    "type": type,
-    "name": channelName
-  };
+Future<Channel> newChannel(String group, int type, String channelName) async {
+  final newChannel = db.collection("Groups").doc(group).collection("Channels").doc();
 
-  db
-      .collection('Groups')
-      .doc(group)
-      .collection('Channels')
-      .doc()
-      .set(newChan)
-      .onError((e, _) => print("Error writing document $e"));
+  await newChannel.set({
+    "name": channelName,
+    "type": type,
+    "channelID": newChannel.id
+  });
+
+  return Channel(name: channelName, channelID: newChannel.id);
+
 }
 
 //this fxn will create a new event to be used in the calendar
@@ -88,15 +83,18 @@ Future <List<Map<String,dynamic>>> groupList(String uid) async
 {
   List<Map<String, dynamic>> userGroupList = [];
   var query = await db.collection("Users").doc(uid).collection("Group List").get();
-  print(query);
-  await db.collection("Users").doc(uid).collection("Group List").get();
 
+  for (var docSnapshot in query.docs) {
+    var groupDocID = docSnapshot.data()["groupID"];
+    var groupDoc = await db.collection("Groups").doc(groupDocID).get();
 
-    for (var docSnapshot in query.docs) {
-      print('${docSnapshot.id} => ${docSnapshot.data()}');
-      userGroupList.add(docSnapshot.data());
-    }
+    print('Found group ${groupDocID}');
+    print('Here is its data: ${groupDoc.data()}');
 
+    userGroupList.add(groupDoc.data()!);
+  }
+
+  print('Found ${userGroupList.length} groups!');
   return userGroupList;
 }
 
@@ -109,10 +107,12 @@ Future<List<Map<String, dynamic>>> channelList(String group) async
   var query = await db.collection("Groups").doc(group).collection("Channels").get();
 
   for (var docSnapshot in query.docs){
-    print('${docSnapshot.id} => ${docSnapshot.data()}');
+    print("Found channel with ID ${docSnapshot.id}");
+    print("Here is its data: ${docSnapshot.data()}");
     groupChannelList.add(docSnapshot.data());
-
   }
+
+  print("Found ${groupChannelList.length} channels.");
   return groupChannelList;
 }
 
