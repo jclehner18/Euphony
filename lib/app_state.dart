@@ -13,13 +13,10 @@ class GroupChannelState extends ChangeNotifier {
   var num_groups = 2;
   var current_group = 0;
   var current_channel = 0;
-  List<Map<String, dynamic>> group_list = [
-    {"groupID": " "},
-    {"groupID": " "},
-  ];
-  var channel_list = [];
-  List<Message> message_list = [];
-  List<Message> pinned_list = [];
+  List<Group> group_list = [];
+  // var channel_list = [];
+  // List<Message> message_list = [];
+  // List<Message> pinned_list = [];
 
 
   Future<void> select_group(int index) async {
@@ -31,9 +28,9 @@ class GroupChannelState extends ChangeNotifier {
   }
 
   Future<void> select_channel(int index) async {
-    print("Selecting channel ${channel_list[current_channel]["name"]}");
+    // print("Selecting channel ${channel_list[current_channel]["name"]}");
     current_channel = index;
-    message_list.clear();
+    // message_list.clear();
 
     //init_message_list();
 
@@ -41,42 +38,58 @@ class GroupChannelState extends ChangeNotifier {
     print("Completed selecting channel");
   }
 
-  Future<void> init_groups_list() async {
-    print("Running AppState.init_groups_list");
-    String uid = current_user.uid;
+  Future<void> initGroupsList() async {
+    var dbList = await groupList(current_user.uid);
 
-    group_list = await groupList(uid);
+    print("Fetched ${group_list.length} groups");
 
-    print(group_list.length);
+    group_list.clear();
 
-    //group_list = ["Sample 1", "Sample 2"];
-    print('$group_list');
-    select_group(current_group);
+    for (var group in dbList) {
+      group_list.add(Group(
+          name: group['name'],
+          groupID: group['groupID']
+      ));
+    }
 
-    print("Completed AppState.init_groups_list");
-
-    //notifyListeners();
+    await initChannelsList();
+    // notifyListeners();
   }
 
-  Future<void> init_channels_list() async {
-    print("Running AppState.init_channels_list");
+  Future<void> initChannelsList() async {
 
+    for (var group in group_list) {
+      var dbList = await channelList(group.groupID);
+
+      group.channel_list.clear();
+      for (var channel in dbList) {
+        group.channel_list.add(Channel(
+         name: channel['name'],
+         channelID: channel['channelID']
+        ));
+      }
+    }
+    initMessageList();
+    // notifyListeners();
+    /*
+    var db_list = await channelList(group_list[current_group].groupID);
     channel_list.clear();
-    channel_list = await channelList(group_list[current_group]["groupID"]);
-    select_channel(current_channel);
-
-    print("Completed AppState.init_channels_list");
+    for (var channel in db_list) {
+      channel_list.add(Channel(name: channel['name'], channelID: channel['channelID']));
+    }
+    */
   }
 
-  Future<void> init_message_list() async {
+  Future<void> initMessageList() async {
     print("Running AppState.init_message_list");
 
-    var retrieved_list = await messageList(
-        group_list[current_group]["groupID"],
-        channel_list[current_channel]["channelID"]
+    /*
+    var retrievedList = await messageList(
+        group_list[current_group].groupID,
+        group_list[current_group].channel_list[current_channel].channelID
     );
 
-    for (var messageDoc in retrieved_list) {
+    for (var messageDoc in retrievedList) {
       Message message = Message(
           body: messageDoc["messageBody"],
           senderID: messageDoc["uID"],
@@ -87,27 +100,41 @@ class GroupChannelState extends ChangeNotifier {
         pinned_list.add(message);
       }
     }
+    */
 
-    print("Completed AppState.init_message_list");
+    for (var group in group_list) {
+      for (var channel in group.channel_list) {
+        var retrievedList = await messageList(group.groupID, channel.channelID);
+
+        channel.messages.clear();
+        channel.pinned_messages.clear();
+        for (var messageDoc in retrievedList) {
+          Message message = Message(
+              body: messageDoc['messageBody'],
+              senderID: messageDoc['uID'],
+              timestamp: messageDoc['time']
+          );
+          channel.messages.add(message);
+          if (messageDoc['isPin']) channel.pinned_messages.add(message);
+        }
+      }
+    }
+
+    notifyListeners();
   }
 
-  Future<void> create_group(String newGroupName) async {
-    print("Creating group $newGroupName");
-
-    newGroup(newGroupName, current_user.uid);
-    await init_groups_list();
-    current_group = group_list.length + 1;
-    create_channel("General");
-
-    print("Finished creating group $newGroupName");
+  Future<void> createGroup(String newGroupName) async {
+    Group new_group = await newGroup(newGroupName, current_user.uid);
+    group_list.add(new_group);
+    createChannel(new_group.groupID, "General");
+    current_group = group_list.length - 1;
+    notifyListeners();
   }
 
-  Future<void> create_channel(String newChannelName) async {
-    // TODO: Remove print
-    print("Created channel $newChannelName");
-
-    newChannel(group_list[current_group]['groupID']!, 0, newChannelName);
-
+  Future<void> createChannel(String groupID, String newChannelName) async {
+    Channel new_channel = await newChannel(groupID, 0, newChannelName);
+    group_list[current_group].channel_list.add(new_channel);
+    current_channel = group_list[current_group].channel_list.length - 1;
     notifyListeners();
   }
 
@@ -117,17 +144,19 @@ class GroupChannelState extends ChangeNotifier {
     print("> $body");
 
     sendNewMsg(
-      group_list[current_group]["groupID"],
-      channel_list[current_channel]["channelID"],
+      group_list[current_group].groupID,
+      group_list[current_group].channel_list[current_channel].channelID,
       body,
       current_user.uid
     );
     select_channel(current_channel);
+
+    notifyListeners();
   }
 
   void toggle_pin(int index) {
 
-    pinned_list.add(message_list[index]);
+    // pinned_list.add(message_list[index]);
 
     notifyListeners();
   }
@@ -146,6 +175,7 @@ class Channel {
   final String name;
   final String channelID;
   final List<Message> messages = [];
+  final List<Message> pinned_messages = [];
 
   Channel({required this.name, required this.channelID});
 }
@@ -154,7 +184,7 @@ class Group {
   final String name;
   final String groupID;
   final List users = [];
-  final List<Channel> channels = [];
+  final List<Channel> channel_list = [];
 
   Group({required this.name, required this.groupID});
 }

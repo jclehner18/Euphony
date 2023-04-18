@@ -116,8 +116,7 @@ Future<List<Map<String, dynamic>>> getPinnedMessages(String group, String channe
 
 //this is used to send new messages into the database using the current channel collection that we are in
 //CONFIRM WORKS
-sendNewMsg(String group, String channel, String msg, String uID)
-{
+void sendNewMsg(String group, String channel, String msg, String uID) {
 
   final newMsg ={
     "messageBody": msg,
