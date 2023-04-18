@@ -64,8 +64,8 @@ class GroupChannelState extends ChangeNotifier {
       group.channel_list.clear();
       for (var channel in dbList) {
         group.channel_list.add(Channel(
-         name: channel['name'],
-         channelID: channel['channelID']
+            name: channel['name'],
+            channelID: channel['channelID']
         ));
       }
     }
@@ -88,7 +88,6 @@ class GroupChannelState extends ChangeNotifier {
         group_list[current_group].groupID,
         group_list[current_group].channel_list[current_channel].channelID
     );
-
     for (var messageDoc in retrievedList) {
       Message message = Message(
           body: messageDoc["messageBody"],
@@ -112,7 +111,9 @@ class GroupChannelState extends ChangeNotifier {
           Message message = Message(
               body: messageDoc['messageBody'],
               senderID: messageDoc['uID'],
-              timestamp: messageDoc['time']
+              timestamp: messageDoc['time'],
+              messageID: messageDoc['mID'],
+              pinStatus: messageDoc['isPin']
           );
           channel.messages.add(message);
           if (messageDoc['isPin']) channel.pinned_messages.add(message);
@@ -144,10 +145,10 @@ class GroupChannelState extends ChangeNotifier {
     print("> $body");
 
     sendNewMsg(
-      group_list[current_group].groupID,
-      group_list[current_group].channel_list[current_channel].channelID,
-      body,
-      current_user.uid
+        group_list[current_group].groupID,
+        group_list[current_group].channel_list[current_channel].channelID,
+        body,
+        current_user.uid
     );
     select_channel(current_channel);
 
@@ -155,20 +156,32 @@ class GroupChannelState extends ChangeNotifier {
   }
 
   void toggle_pin(int index) {
+    String active_group = group_list[current_group].groupID;
+    String active_channel = group_list[current_group].channel_list[current_channel].channelID;
+    bool active_message_pin = group_list[current_group].channel_list[current_channel].messages[index].pinStatus;
+    String active_message_id = group_list[current_group].channel_list[current_channel].messages[index].messageID;
 
-    // pinned_list.add(message_list[index]);
+
+    if(active_message_pin == true){
+      pinMsg(active_group, active_channel, active_message_id, false);
+    }
+    else{
+      pinMsg(active_group, active_channel, active_message_id, true);
+    }
+
 
     notifyListeners();
   }
-
 }
 
 class Message {
   final String body;
   final String senderID;
   final Timestamp timestamp;
+  final String messageID;
+  final bool pinStatus;
 
-  Message({required this.body, required this.senderID, required this.timestamp});
+  Message({required this.body, required this.senderID, required this.timestamp, required this.messageID, required this.pinStatus});
 }
 
 class Channel {
@@ -188,4 +201,3 @@ class Group {
 
   Group({required this.name, required this.groupID});
 }
-

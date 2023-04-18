@@ -17,6 +17,9 @@ class LoginPage extends StatelessWidget {
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
   TextEditingController _usernameTextController = TextEditingController();
+
+
+
   @override 
   Widget build(BuildContext context) {
     return Scaffold(

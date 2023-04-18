@@ -97,7 +97,7 @@ Future<void> pinMsg(String group, String channel, String message, bool pin) asyn
       .collection('Messages')
       .doc(message);
   await msgToPin
-    .update({"isPin": true})
+    .update({"isPin": pin})
     .onError((e, _) => print ("Error pinning document: $e"));
 }
 
@@ -116,22 +116,22 @@ Future<List<Map<String, dynamic>>> getPinnedMessages(String group, String channe
 
 //this is used to send new messages into the database using the current channel collection that we are in
 //CONFIRM WORKS
-void sendNewMsg(String group, String channel, String msg, String uID) {
+void sendNewMsg(String group, String channel, String msg, String uID)
+{
+  final timestamp = FieldValue.serverTimestamp();
+  final newMsg = db
+      .collection('Groups')
+      .doc(group)
+      .collection('Channels')
+      .doc(channel)
+      .collection('Messages')
+      .doc();
+   newMsg.set({
+        "messageBody": msg,
+        "time": timestamp,
+        "uID": uID,
+        "isPin": false,
+        "mID": newMsg.id
+        }).onError((e, _) => print("Error writing document $e"));
 
-  final newMsg ={
-    "messageBody": msg,
-    "time": FieldValue.serverTimestamp(),
-    "uID": uID,
-    "isPin": false
-  };
-
-  db
-    .collection('Groups')
-    .doc(group)
-    .collection('Channels')
-    .doc(channel)
-    .collection('Messages')
-    .doc()
-    .set(newMsg)
-    .onError((e, _) => print("Error writing document $e"));
 }
