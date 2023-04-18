@@ -106,20 +106,15 @@ class _MainViewState extends State<MainView> {
   /*
   Future<void> _initGroupsList() async {
     var db_list = await groupList(current_user.uid);
-
     print("Fetched ${group_list.length} groups");
-
     group_list.clear();
-
     for (var group in db_list) {
       group_list.add(Group(
         name: group['name'],
         groupID: group['groupID']
       ));
     }
-
     await _initChannelsList();
-
     print('$group_list');
   }
   */
@@ -128,19 +123,15 @@ class _MainViewState extends State<MainView> {
     /*
     for (var group in group_list) {
       var db_list = await channelList(group.groupID);
-
       // for (var channel in db_list) {
       //  group.channels.add(Channel(
       //    name: channel['name'],
       //    channelID: channel['channelID']
       //  ));
       // }
-
       print("Added to group ${group.name} the following channels: ${group.channels}");
-
     }
     */
-
     var db_list = await channelList(group_list[current_group].groupID);
     channel_list.clear();
     for (var channel in db_list) {
@@ -181,91 +172,91 @@ class _MainViewState extends State<MainView> {
     GroupChannelState appState = Provider.of(context);
 
     return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        bool wide_display = (constraints.maxWidth >= NARROW_SCREEN_WIDTH);
-        if (wide_display) {
-          return Scaffold(
-            appBar: AppBar(
-                title: Text("Welcome to Euphony, ${current_user.displayName}"),
-                actions: [
-                  ElevatedButton(
-                      onPressed: () {
-                        /*
+        builder: (BuildContext context, BoxConstraints constraints) {
+          bool wide_display = (constraints.maxWidth >= NARROW_SCREEN_WIDTH);
+          if (wide_display) {
+            return Scaffold(
+              appBar: AppBar(
+                  title: Text("Welcome to Euphony, ${current_user.displayName}"),
+                  actions: [
+                    ElevatedButton(
+                        onPressed: () {
+                          /*
                     print("Opened Settings Page);
                     */
-                        Navigator.push(context, MaterialPageRoute(builder: ((context) => settingsPage())));
-                      },
-                      child: const Icon(Icons.settings)
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        /*
+                          Navigator.push(context, MaterialPageRoute(builder: ((context) => settingsPage())));
+                        },
+                        child: const Icon(Icons.settings)
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          /*
                     print("Logged Out");
                     */
-                        FirebaseAuth.instance.signOut().then((value) {
-                          Navigator.push(context, MaterialPageRoute(builder: ((context) => LoginPage())));
-                        });
-                      },
-                      child: const Icon(Icons.logout_outlined)
+                          FirebaseAuth.instance.signOut().then((value) {
+                            Navigator.push(context, MaterialPageRoute(builder: ((context) => LoginPage())));
+                          });
+                        },
+                        child: const Icon(Icons.logout_outlined)
+                    ),
+
+                  ]
+              ),
+              body: Row(
+                children: [
+                  SafeArea(
+                    child: buildNavigationRails(context, wide_display),
                   ),
-                  
-                ]
-            ),
-            body: Row(
-              children: [
-                SafeArea(
-                  child: buildNavigationRails(context, wide_display),
-                ),
-                Expanded(
-                  child: ChannelPane(
-                    groupID: appState.group_list[appState.current_group].groupID,
-                    channelID: appState
-                      .group_list[appState.current_group]
-                      .channel_list[appState.current_channel]
-                      .channelID
+                  Expanded(
+                      child: ChannelPane(
+                          groupID: appState.group_list[appState.current_group].groupID,
+                          channelID: appState
+                              .group_list[appState.current_group]
+                              .channel_list[appState.current_channel]
+                              .channelID
+                      )
                   )
-                )
-              ],
-            ),
-          );
-        } else {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text("Euphony"),
-              actions: [
-                ElevatedButton(
-                    onPressed: () {
-                      /*
+                ],
+              ),
+            );
+          } else {
+            return Scaffold(
+                appBar: AppBar(
+                    title: const Text("Euphony"),
+                    actions: [
+                      ElevatedButton(
+                          onPressed: () {
+                            /*
                   print("Opened Settings Page);
                   */
-                    },
-                    child: const Icon(Icons.settings)
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      /*
+                          },
+                          child: const Icon(Icons.settings)
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            /*
                   print("Logged Out");
                   */
-                    },
-                    child: const Icon(Icons.logout_outlined)
+                          },
+                          child: const Icon(Icons.logout_outlined)
+                      ),
+                    ]
                 ),
-              ]
-            ),
-            body: ChannelPane(
-              groupID: appState
-                .group_list[appState.current_group]
-                .groupID,
-              channelID: appState
-                .group_list[appState.current_group]
-                .channel_list[appState.current_channel]
-                .channelID
-            ),
-            drawer: Drawer(
-              child: buildNavigationRails(context, wide_display),
-            )
-          );
+                body: ChannelPane(
+                    groupID: appState
+                        .group_list[appState.current_group]
+                        .groupID,
+                    channelID: appState
+                        .group_list[appState.current_group]
+                        .channel_list[appState.current_channel]
+                        .channelID
+                ),
+                drawer: Drawer(
+                  child: buildNavigationRails(context, wide_display),
+                )
+            );
+          }
         }
-      }
     );
   }
 
@@ -275,174 +266,174 @@ class _MainViewState extends State<MainView> {
     // appState.init_channels_list();
 
     return Builder(
-      builder: (BuildContext context) {
-        return Row(
-            children: [
-              SizedBox(
-                  width: (wide_display ? 100 : 60),
-                  child: Builder(
-                    // future: appState.initGroupsList(),
-                    builder: (BuildContext context) {
-                      //if (snapshot.connectionState == ConnectionState.done) {
-                        if (appState.group_list.length >= 2) {
-                          return NavigationRail(
-                            extended: false,
-                            destinations: [
-                              for (var group in appState.group_list)
-                                NavigationRailDestination(
-                                    icon: Icon(Icons.group_work),
-                                    label: Text(group.name)
-                                )
-                            ],
-                            selectedIndex: appState.current_group,
-                            onDestinationSelected: (value) {
-                              setState(() {
-                                appState.current_group = value;
-                              });
-                            },
-                            trailing: ElevatedButton(
-                                onPressed: () async {
-                                  await _onPressNewGroup();
-                                  if (_newGroupName != '') appState.createGroup(_newGroupName);
-                                  _newGroupName = '';
-                                },
-                                child: Icon(Icons.add)
-                            ),
-                          );
-                        } else {
-                          return Container(
-                            padding: EdgeInsets.all(8),
-                            child: Column(
-                              children: [
-                                Text("It looks like you're not a member of any groups! Click the '+' or wait to be added to a group."),
-                                SizedBox(height: 16),
-                                ElevatedButton(
-                                    onPressed: () async {
-                                      await _onPressNewGroup();
-                                      if (_newGroupName != '') appState.createGroup(_newGroupName);
-                                      _newGroupName = '';
-                                    },
-                                    child: Icon(Icons.add)
-                                )
-                              ],
-                            )
-                          );
-                        }
-                      //} else {
-                        // return CircularProgressIndicator();
-                      //}
-                    }
-                  )
-              ),
-              DefaultTabController(
-                length: 2,
-                child: SizedBox(
-                  width: (wide_display ? 220 : 90),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: (wide_display ? null : 50),
-                        child: TabBar(
-                            labelColor: Theme
-                                .of(context)
-                                .focusColor,
-                            tabs: [
-                              Tab(
-                                  icon: Icon(Icons.list),
-                                  text: (wide_display
-                                      ? "Channels"
-                                      : null)
-                              ),
-                              Tab(
-                                  icon: Icon(Icons.people),
-                                  text: (wide_display
-                                      ? "Members"
-                                      : null)
-                              )
-                            ]
-                        ),
-                      ),
-                      Expanded(
-                        child: Builder(
-                          builder: (BuildContext context) {
-                            // print("Rebuilding channels pane");
-                            // print("Building channel nav rail: ${appState.channel_list}");
-                            if (appState.group_list[appState.current_group].channel_list.length >= 2) {
-                                return TabBarView(
-                                  children: [
-                                    NavigationRail(
-                                      extended: wide_display,
-                                      destinations: [
-                                        for (var channel in appState.group_list[appState.current_group].channel_list)
-                                          NavigationRailDestination(
-                                              padding: EdgeInsets.all(2),
-                                              icon: Icon(Icons.tag),
-                                              label: Text(channel.name)
-                                          )
-                                      ],
-                                      selectedIndex: appState.current_channel,
-                                      onDestinationSelected: (value) async {
-                                        setState(() {
-                                          appState.current_channel = value;
-                                        });
-                                      },
-                                      trailing: ElevatedButton(
-                                        onPressed: () async {
-                                          await _onPressNewChannel();
-                                          if (_newChannelName != '') {
-                                            appState.createChannel(appState.group_list[appState.current_group].groupID, _newChannelName);
-                                          }
-                                          _newChannelName = '';
-                                        },
-                                        child: Text("New Channel")
-                                      )
-                                    ),
-                                    ListView.builder(
-                                      itemCount: 3,
-                                      itemBuilder: (context, value) {
-                                        return GroupMemberCard();
-                                        // TODO: Get members from db
-                                      },
-                                    )
-                                  ]
-                                );
-                              } else {
-                                return Container(
-                                  alignment: Alignment.topCenter,
-                                  padding: EdgeInsets.all(8),
-                                  child: Column(
-                                    children: [
-                                      Text("Looks like there's nothing here! Click 'Create Channel' to get started."),
-                                      SizedBox(
-                                        height: 16
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          await _onPressNewChannel();
-                                          if (_newChannelName != '') {
-                                            appState.createChannel(appState.group_list[appState.current_group].groupID, _newChannelName);
-                                          }
-                                          _newChannelName = '';
-                                        },
-                                        child: Text("New Channel")
-                                      )
-                                    ],
+        builder: (BuildContext context) {
+          return Row(
+              children: [
+                SizedBox(
+                    width: (wide_display ? 100 : 60),
+                    child: Builder(
+                      // future: appState.initGroupsList(),
+                        builder: (BuildContext context) {
+                          //if (snapshot.connectionState == ConnectionState.done) {
+                          if (appState.group_list.length >= 2) {
+                            return NavigationRail(
+                              extended: false,
+                              destinations: [
+                                for (var group in appState.group_list)
+                                  NavigationRailDestination(
+                                      icon: Icon(Icons.group_work),
+                                      label: Text(group.name)
                                   )
-                                );
-                              }
+                              ],
+                              selectedIndex: appState.current_group,
+                              onDestinationSelected: (value) {
+                                setState(() {
+                                  appState.current_group = value;
+                                });
+                              },
+                              trailing: ElevatedButton(
+                                  onPressed: () async {
+                                    await _onPressNewGroup();
+                                    if (_newGroupName != '') appState.createGroup(_newGroupName);
+                                    _newGroupName = '';
+                                  },
+                                  child: Icon(Icons.add)
+                              ),
+                            );
+                          } else {
+                            return Container(
+                                padding: EdgeInsets.all(8),
+                                child: Column(
+                                  children: [
+                                    Text("It looks like you're not a member of any groups! Click the '+' or wait to be added to a group."),
+                                    SizedBox(height: 16),
+                                    ElevatedButton(
+                                        onPressed: () async {
+                                          await _onPressNewGroup();
+                                          if (_newGroupName != '') appState.createGroup(_newGroupName);
+                                          _newGroupName = '';
+                                        },
+                                        child: Icon(Icons.add)
+                                    )
+                                  ],
+                                )
+                            );
                           }
-                        ),
-                      ),
-                    ],
-                  ),
+                          //} else {
+                          // return CircularProgressIndicator();
+                          //}
+                        }
+                    )
                 ),
-              )
-            ]
-        );
-      }
+                DefaultTabController(
+                  length: 2,
+                  child: SizedBox(
+                    width: (wide_display ? 220 : 90),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: (wide_display ? null : 50),
+                          child: TabBar(
+                              labelColor: Theme
+                                  .of(context)
+                                  .focusColor,
+                              tabs: [
+                                Tab(
+                                    icon: Icon(Icons.list),
+                                    text: (wide_display
+                                        ? "Channels"
+                                        : null)
+                                ),
+                                Tab(
+                                    icon: Icon(Icons.people),
+                                    text: (wide_display
+                                        ? "Members"
+                                        : null)
+                                )
+                              ]
+                          ),
+                        ),
+                        Expanded(
+                          child: Builder(
+                              builder: (BuildContext context) {
+                                // print("Rebuilding channels pane");
+                                // print("Building channel nav rail: ${appState.channel_list}");
+                                if (appState.group_list[appState.current_group].channel_list.length >= 2) {
+                                  return TabBarView(
+                                      children: [
+                                        NavigationRail(
+                                            extended: wide_display,
+                                            destinations: [
+                                              for (var channel in appState.group_list[appState.current_group].channel_list)
+                                                NavigationRailDestination(
+                                                    padding: EdgeInsets.all(2),
+                                                    icon: Icon(Icons.tag),
+                                                    label: Text(channel.name)
+                                                )
+                                            ],
+                                            selectedIndex: appState.current_channel,
+                                            onDestinationSelected: (value) async {
+                                              setState(() {
+                                                appState.current_channel = value;
+                                              });
+                                            },
+                                            trailing: ElevatedButton(
+                                                onPressed: () async {
+                                                  await _onPressNewChannel();
+                                                  if (_newChannelName != '') {
+                                                    appState.createChannel(appState.group_list[appState.current_group].groupID, _newChannelName);
+                                                  }
+                                                  _newChannelName = '';
+                                                },
+                                                child: Text("New Channel")
+                                            )
+                                        ),
+                                        ListView.builder(
+                                          itemCount: 3,
+                                          itemBuilder: (context, value) {
+                                            return GroupMemberCard();
+                                            // TODO: Get members from db
+                                          },
+                                        )
+                                      ]
+                                  );
+                                } else {
+                                  return Container(
+                                      alignment: Alignment.topCenter,
+                                      padding: EdgeInsets.all(8),
+                                      child: Column(
+                                        children: [
+                                          Text("Looks like there's nothing here! Click 'Create Channel' to get started."),
+                                          SizedBox(
+                                              height: 16
+                                          ),
+                                          ElevatedButton(
+                                              onPressed: () async {
+                                                await _onPressNewChannel();
+                                                if (_newChannelName != '') {
+                                                  appState.createChannel(appState.group_list[appState.current_group].groupID, _newChannelName);
+                                                }
+                                                _newChannelName = '';
+                                              },
+                                              child: Text("New Channel")
+                                          )
+                                        ],
+                                      )
+                                  );
+                                }
+                              }
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ]
+          );
+        }
     );
 
-    throw UnimplementedError();
+
   }
 }
 
@@ -466,7 +457,6 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
   /*
   Future<void> _init_message_list() async {
     var db_list = await messageList(widget.groupID, widget.channelID);
-
     message_list.clear();
     for (var messageDoc in db_list) {
       Message message = Message(
@@ -483,7 +473,6 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
   */
   /*
   Future<void> _toggle_pin(int index) async {
-
   }
   */
 
@@ -512,167 +501,167 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
     GroupChannelState appState = Provider.of(context);
 
     return LayoutBuilder(
-      builder: (context, constraints) {
-        return Card(
-          child: Column(
-            children: [
-              TabBar(
-                  labelColor: Theme.of(context).focusColor,
-                  controller: _tab_controller,
-                  tabs: const <Tab>[
-                    Tab(
-                      icon: Icon(Icons.forum),
-                      text: "Messages",
-                    ),
-                    Tab(
-                      icon: Icon(Icons.calendar_month),
-                      text: "Calendar",
-                    ),
-                    Tab(
-                      icon: Icon(Icons.push_pin),
-                      text: "Pins",
-                    )
-                  ]
-              ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tab_controller,
-                  children: [
-                    Container(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Builder(
-                              builder: (BuildContext context) {
-                                return ListView.builder(
-                                  itemCount: appState
-                                    .group_list[appState.current_group]
-                                    .channel_list[appState.current_channel]
-                                    .messages.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    var message = appState
-                                      .group_list[appState.current_group]
-                                      .channel_list[appState.current_channel]
-                                      .messages[index];
-                                    return _ContextMenuRegion(
-                                      contextMenuBuilder: (context, offset) {
-                                        return AdaptiveTextSelectionToolbar.buttonItems(
-                                          anchors: TextSelectionToolbarAnchors(
-                                            primaryAnchor: offset,
-                                          ),
-                                          buttonItems: [
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                appState.toggle_pin(index);
-                                                ContextMenuController.removeAny();
-                                              },
-                                              label: pinned_message_list.contains(message) ? "Unpin" : "Pin"
-                                            )
-                                          ],
-                                        );
-                                      },
-                                      child: MessageCard(
-                                        messageBody: message.body,
-                                        messageTimestamp: message.timestamp.toString(),
-                                        messageSender: message.senderID,
-                                      )
-                                    );
-                                  }
-                                );
-                              }
-                            )
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: TextField(
-                                      controller: _message_body_controller,
-                                      onSubmitted: (value) {
-                                        appState.send_message(value);
-                                        _send_message(value);
-                                      }
+        builder: (context, constraints) {
+          return Card(
+            child: Column(
+              children: [
+                TabBar(
+                    labelColor: Theme.of(context).focusColor,
+                    controller: _tab_controller,
+                    tabs: const <Tab>[
+                      Tab(
+                        icon: Icon(Icons.forum),
+                        text: "Messages",
+                      ),
+                      Tab(
+                        icon: Icon(Icons.calendar_month),
+                        text: "Calendar",
+                      ),
+                      Tab(
+                        icon: Icon(Icons.push_pin),
+                        text: "Pins",
+                      )
+                    ]
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tab_controller,
+                    children: [
+                      Container(
+                        child: Column(
+                          children: [
+                            Expanded(
+                                child: Builder(
+                                    builder: (BuildContext context) {
+                                      return ListView.builder(
+                                          itemCount: appState
+                                              .group_list[appState.current_group]
+                                              .channel_list[appState.current_channel]
+                                              .messages.length,
+                                          itemBuilder: (BuildContext context, int index) {
+                                            var message = appState
+                                                .group_list[appState.current_group]
+                                                .channel_list[appState.current_channel]
+                                                .messages[index];
+                                            return _ContextMenuRegion(
+                                                contextMenuBuilder: (context, offset) {
+                                                  return AdaptiveTextSelectionToolbar.buttonItems(
+                                                    anchors: TextSelectionToolbarAnchors(
+                                                      primaryAnchor: offset,
+                                                    ),
+                                                    buttonItems: [
+                                                      ContextMenuButtonItem(
+                                                          onPressed: () {
+                                                            appState.toggle_pin(index);
+                                                            ContextMenuController.removeAny();
+                                                          },
+                                                          label: pinned_message_list.contains(message) ? "Unpin" : "Pin"
+                                                      )
+                                                    ],
+                                                  );
+                                                },
+                                                child: MessageCard(
+                                                  messageBody: message.body,
+                                                  messageTimestamp: message.timestamp.toString(),
+                                                  messageSender: message.senderID,
+                                                )
+                                            );
+                                          }
+                                      );
+                                    }
+                                )
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: TextField(
+                                        controller: _message_body_controller,
+                                        onSubmitted: (value) {
+                                          appState.send_message(value);
+                                          _send_message(value);
+                                        }
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    /*
-                                  print("Sent Message");
-                                  */
-                                    appState.send_message(_message_body_controller.text);
-                                    _send_message(_message_body_controller.text);
-                                  },
-                                  child: const Icon(Icons.send),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: ElevatedButton(
+                                Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: ElevatedButton(
                                     onPressed: () {
                                       /*
+                                  print("Sent Message");
+                                  */
+                                      appState.send_message(_message_body_controller.text);
+                                      _send_message(_message_body_controller.text);
+                                    },
+                                    child: const Icon(Icons.send),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        /*
                                   print("Attaching File to Message");
                                   */
-                                    },
-                                    child: const Icon(Icons.attach_file)
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      child: EuphonyCalendar()
-                    ),
-                    Container(
-                      child: ListView.builder(
-                        itemCount: appState
-                            .group_list[appState.current_group]
-                            .channel_list[appState.current_channel]
-                            .pinned_messages
-                            .length,
-                        itemBuilder: (BuildContext context, int index) {
-                          var message = appState
-                              .group_list[appState.current_group]
-                              .channel_list[appState.current_channel]
-                              .pinned_messages[index];
-                          return _ContextMenuRegion(
-                              contextMenuBuilder: (context, offset) {
-                                return AdaptiveTextSelectionToolbar.buttonItems(
-                                  anchors: TextSelectionToolbarAnchors(
-                                    primaryAnchor: offset,
+                                      },
+                                      child: const Icon(Icons.attach_file)
                                   ),
-                                  buttonItems: [
-                                    ContextMenuButtonItem(
-                                        onPressed: () {
-                                          appState.toggle_pin(index);
-                                          ContextMenuController.removeAny();
-                                        },
-                                        label: "Unpin"
-                                    )
-                                  ],
-                                );
-                              },
-                              child: MessageCard(
-                                messageBody: message.body,
-                                messageSender: message.senderID,
-                                messageTimestamp: message.timestamp.toString(),
-                              )
-                          );
-                        }
+                                )
+                              ],
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        );
-      }
+                      Container(
+                          child: EuphonyCalendar()
+                      ),
+                      Container(
+                        child: ListView.builder(
+                            itemCount: appState
+                                .group_list[appState.current_group]
+                                .channel_list[appState.current_channel]
+                                .pinned_messages
+                                .length,
+                            itemBuilder: (BuildContext context, int index) {
+                              var message = appState
+                                  .group_list[appState.current_group]
+                                  .channel_list[appState.current_channel]
+                                  .pinned_messages[index];
+                              return _ContextMenuRegion(
+                                  contextMenuBuilder: (context, offset) {
+                                    return AdaptiveTextSelectionToolbar.buttonItems(
+                                      anchors: TextSelectionToolbarAnchors(
+                                        primaryAnchor: offset,
+                                      ),
+                                      buttonItems: [
+                                        ContextMenuButtonItem(
+                                            onPressed: () {
+                                              appState.toggle_pin(index);
+                                              ContextMenuController.removeAny();
+                                            },
+                                            label: "Unpin"
+                                        )
+                                      ],
+                                    );
+                                  },
+                                  child: MessageCard(
+                                    messageBody: message.body,
+                                    messageSender: message.senderID,
+                                    messageTimestamp: message.timestamp.toString(),
+                                  )
+                              );
+                            }
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        }
     );
   }
 }
@@ -680,8 +669,8 @@ class _ChannelPaneState extends State<ChannelPane> with TickerProviderStateMixin
 
 
 typedef ContextMenuBuilder = Widget Function(
-  BuildContext context, Offset offset
-);
+    BuildContext context, Offset offset
+    );
 class _ContextMenuRegion extends StatefulWidget {
   const _ContextMenuRegion({
     required this.contextMenuBuilder,
