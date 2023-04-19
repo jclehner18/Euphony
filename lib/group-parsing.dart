@@ -101,8 +101,7 @@ Future <List<Map<String,dynamic>>> groupList(String uid) async
 
 //generates a list of channels from a group
 //CONFIRM WORKS
-Future<List<Map<String, dynamic>>> channelList(String group) async
-{
+Future<List<Map<String, dynamic>>> channelList(String group) async {
   List<Map<String,dynamic>> groupChannelList = [];
   var query = await db.collection("Groups").doc(group).collection("Channels").get();
 
@@ -119,7 +118,7 @@ Future<List<Map<String, dynamic>>> channelList(String group) async
 
 //generates a list of events from a channel
 //CONFRIM WORKS
-Future<List<Map<String, dynamic>>> eventList(String group, String channel) async{
+Future<List<Map<String, dynamic>>> eventList(String group, String channel) async {
   List<Map<String,dynamic>> channelEventList = [];
   var query = await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Events").get();
   for (var docSnapshot in query.docs){

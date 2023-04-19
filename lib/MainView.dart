@@ -309,6 +309,23 @@ class _MainViewState extends State<MainView> {
                                 child: Icon(Icons.add)
                             ),
                           );
+                        } else if (appState.group_list.isNotEmpty) {
+                          return Container(
+                            padding: EdgeInsets.all(8),
+                            child: Column(
+                              children: [
+                                Icon(Icons.group_work),
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      await _onPressNewGroup();
+                                      if (_newGroupName != '') appState.createGroup(_newGroupName);
+                                      _newGroupName = '';
+                                    },
+                                    child: Icon(Icons.add)
+                                )
+                              ]
+                            )
+                          );
                         } else {
                           return Container(
                             padding: EdgeInsets.all(8),
@@ -368,68 +385,92 @@ class _MainViewState extends State<MainView> {
                             // print("Rebuilding channels pane");
                             // print("Building channel nav rail: ${appState.channel_list}");
                             if (appState.group_list[appState.current_group].channel_list.length >= 2) {
-                                return TabBarView(
+                              return TabBarView(
+                                children: [
+                                  NavigationRail(
+                                    extended: wide_display,
+                                    destinations: [
+                                      for (var channel in appState.group_list[appState.current_group].channel_list)
+                                        NavigationRailDestination(
+                                            padding: EdgeInsets.all(2),
+                                            icon: Icon(Icons.tag),
+                                            label: Text(channel.name)
+                                        )
+                                    ],
+                                    selectedIndex: appState.current_channel,
+                                    onDestinationSelected: (value) async {
+                                      setState(() {
+                                        appState.current_channel = value;
+                                      });
+                                    },
+                                    trailing: ElevatedButton(
+                                      onPressed: () async {
+                                        await _onPressNewChannel();
+                                        if (_newChannelName != '') {
+                                          appState.createChannel(appState.group_list[appState.current_group].groupID, _newChannelName);
+                                        }
+                                        _newChannelName = '';
+                                      },
+                                      child: Text("New Channel")
+                                    )
+                                  ),
+                                  ListView.builder(
+                                    itemCount: 3,
+                                    itemBuilder: (context, value) {
+                                      return GroupMemberCard();
+                                      // TODO: Get members from db
+                                    },
+                                  )
+                                ]
+                              );
+                            } else if (appState.group_list[appState.current_group].channel_list.isNotEmpty) {
+                              return Container(
+                                padding: EdgeInsets.all(8),
+                                child: Column(
                                   children: [
-                                    NavigationRail(
-                                      extended: wide_display,
-                                      destinations: [
-                                        for (var channel in appState.group_list[appState.current_group].channel_list)
-                                          NavigationRailDestination(
-                                              padding: EdgeInsets.all(2),
-                                              icon: Icon(Icons.tag),
-                                              label: Text(channel.name)
-                                          )
-                                      ],
-                                      selectedIndex: appState.current_channel,
-                                      onDestinationSelected: (value) async {
-                                        setState(() {
-                                          appState.current_channel = value;
-                                        });
-                                      },
-                                      trailing: ElevatedButton(
-                                        onPressed: () async {
-                                          await _onPressNewChannel();
-                                          if (_newChannelName != '') {
-                                            appState.createChannel(appState.group_list[appState.current_group].groupID, _newChannelName);
-                                          }
-                                          _newChannelName = '';
-                                        },
-                                        child: Text("New Channel")
-                                      )
+                                    Row(
+                                      children: [
+                                        Icon(Icons.tag),
+                                        Text(appState.group_list[appState.current_group].channel_list[0].name)
+                                      ]
                                     ),
-                                    ListView.builder(
-                                      itemCount: 3,
-                                      itemBuilder: (context, value) {
-                                        return GroupMemberCard();
-                                        // TODO: Get members from db
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        await _onPressNewChannel();
+                                        if (_newChannelName != '') {
+                                          appState.createChannel(appState.group_list[appState.current_group].groupID, _newChannelName);
+                                        }
+                                        _newChannelName = '';
                                       },
+                                      child: Text("New Channel")
                                     )
                                   ]
-                                );
-                              } else {
-                                return Container(
-                                  alignment: Alignment.topCenter,
-                                  padding: EdgeInsets.all(8),
-                                  child: Column(
-                                    children: [
-                                      Text("Looks like there's nothing here! Click 'Create Channel' to get started."),
-                                      SizedBox(
-                                        height: 16
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          await _onPressNewChannel();
-                                          if (_newChannelName != '') {
-                                            appState.createChannel(appState.group_list[appState.current_group].groupID, _newChannelName);
-                                          }
-                                          _newChannelName = '';
-                                        },
-                                        child: Text("New Channel")
-                                      )
-                                    ],
-                                  )
-                                );
-                              }
+                                )
+                              );
+                            } else {
+                              return Container(
+                                alignment: Alignment.topCenter,
+                                padding: EdgeInsets.all(8),
+                                child: Column(
+                                  children: [
+                                    Text("Looks like there's nothing here! Click 'Create Channel' to get started."),
+                                    SizedBox(
+                                      height: 16
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        await _onPressNewChannel();
+                                        if (_newChannelName != '') {
+                                          appState.createChannel(appState.group_list[appState.current_group].groupID, _newChannelName);
+                                        }
+                                        _newChannelName = '';
+                                      },
+                                      child: Text("New Channel")
+                                    )
+                                  ],
+                                )
+                              );
+                            }
                           }
                         ),
                       ),

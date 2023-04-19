@@ -1,11 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/scheduler/binding.dart';
 import 'package:flutter/src/services/text_formatter.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/core.dart';
 import 'package:intl/src/intl/date_format.dart';
 
 import 'package:euphony/app_state.dart';
+import 'package:euphony/group-parsing.dart';
 
 
 int DATE_PICKER_START_YEAR = 1900;
@@ -82,13 +85,13 @@ class _EuphonyCalendarState extends State<EuphonyCalendar> {
 
   @override
   void initState() {
+    super.initState();
+
     _appointments = _getAppointmentDetails();
     calendar_controller.view = _view;
     _events = _EventDataSource(_appointments);
 
     _selected_appointment = null;
-
-    super.initState();
   }
 
   @override
@@ -113,9 +116,27 @@ class _EuphonyCalendarState extends State<EuphonyCalendar> {
   }
 
   List<Appointment> _getAppointmentDetails() {
-    final List<Appointment> appointmentCollection = <Appointment>[];
+    final List<Appointment> appointmentCollection = [];
+    GroupChannelState appState = Provider.of(context);
 
-    // TODO: fetch stuff from the database
+    eventList(
+      appState
+        .group_list[appState.current_group]
+        .groupID,
+      appState
+        .group_list[appState.current_group]
+        .channel_list[appState.current_channel]
+        .channelID
+    ).then((db_list) {
+      for (var eventDoc in db_list) {
+        Appointment apt = Appointment(
+          subject: eventDoc['name'],
+          startTime: DateTime.parse(eventDoc['time']),
+          endTime: DateTime.parse(eventDoc['time']).add(Duration(hours: 1))
+        );
+        appointmentCollection.add(apt);
+      }
+    });
 
     return appointmentCollection;
   }
@@ -190,6 +211,19 @@ class _EuphonyCalendarState extends State<EuphonyCalendar> {
             appointment.add(new_appointment);
 
             _events.appointments.add(appointment[0]);
+
+            GroupChannelState appState = Provider.of(context);
+            createEvent(
+              appState
+                .group_list[appState.current_group]
+                .groupID,
+              appState
+                .group_list[appState.current_group]
+                .channel_list[appState.current_channel]
+                .channelID,
+              new_appointment.subject,
+              Timestamp.fromDate(new_appointment.startTime)
+            );
 
             SchedulerBinding.instance.addPostFrameCallback(
               (Duration duration) {
