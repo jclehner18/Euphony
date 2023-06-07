@@ -6,8 +6,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import 'app_state.dart';
 import 'services/firebase_services.dart';
 
 
@@ -15,6 +17,9 @@ class LoginPage extends StatelessWidget {
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
   TextEditingController _usernameTextController = TextEditingController();
+
+
+
   @override 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,13 +99,12 @@ class LoginPage extends StatelessWidget {
                                           backgroundColor: Colors.grey,
                                           onPressed: () {
                                             Navigator.of(context).pop();
-                                          })
+                                          }
+                                        )
                                       ],
                                     );
                                   });
-                                  
-                              })
-                              .then((value) => {
+                              }).then((value) => {
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => MainView())),
                               });
                               
@@ -121,8 +125,16 @@ class LoginPage extends StatelessWidget {
                       child: FloatingActionButton.extended(
                         onPressed: () async {
                           //GoogleSignIn().signIn();
-                          await FirebaseService().signInWithGoogle();
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => MainView()));
+                          FirebaseService().signInWithGoogle().then((value) {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) {
+                                // Initialize the app's global state.
+                                GroupChannelState appState = Provider.of(context);
+                                appState.initGroupsList();
+                                return MainView();
+                              }
+                            ));
+                          });
                         },
                         // async {
                         //   await FirebaseService().signInWithGoogle();

@@ -1,33 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 
 
 //this will grab a specific message from the database, to return it.
-String getDoc(String group, String channel, String message)
+//IRRELEVANT FOR ACTUAL USE. USED FOR TESTING READING
+Future<String> getDoc(String group, String channel, String message) async
 {
   var data;
-  final docRef = db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages').doc('$message');
-  docRef.get().then(
-      (DocumentSnapshot doc) {
-        data = doc.data() as Map<String, dynamic>;
-      },
-      onError: (e) => print("Error getting document: $e"),
+  final docRef = db.collection('Groups').doc(group).collection('Channel').doc(channel).collection('Messages').doc(message);
+  await docRef.get().then(
+        (DocumentSnapshot doc) {
+      data = doc.data() as Map<String, dynamic>;
+      print(data);
+      var returnMessage = data?['messageBody'];
+
+      print(returnMessage);
+      return returnMessage;
+    },
+    onError: (e) => print("Error getting document: $e"),
   );
-  var returnMessage = data['messageBody'];
-  return returnMessage;
+  throw 'awe hell';
 }
 
 
 
 //this fxn is to listen for new messages being put into the database for the certain channel, then retrieve them
-String listenForMessage(String group, String channel)
+Future<String> listenForMessage(String group, String channel) async
 {
   var returnMessage;
-  var data;
   var channelPoint = db.collection('Groups').doc('$group').collection('Channel').doc('$channel').collection('Messages');
-  channelPoint.doc().snapshots().listen((docSnapshot) {
+  await channelPoint.doc().snapshots().listen((docSnapshot) {
     if (docSnapshot.exists) {
       Map<String, dynamic> data = docSnapshot.data()!;
 
@@ -35,42 +38,100 @@ String listenForMessage(String group, String channel)
       return returnMessage;
     }
   });
-  returnMessage = data['messageBody'];
-  return returnMessage;
+  throw 'awe hell';
+}
+
+//this will pull all the messages from a channel
+//CONFIRM WORKS
+Future<List<Map<String, dynamic>>> messageList(String group, String channel) async {
+  print("Fetching messages from database...");
+
+  List<Map<String,dynamic>> channelMessageList = [];
+  var query = await db
+      .collection("Groups").doc(group)
+      .collection("Channels").doc(channel)
+      .collection("Messages")
+      .orderBy("time")
+      .get();
+
+  for (var docSnapshot in query.docs){
+    print('Found message ${docSnapshot.id} with contents ${docSnapshot.data()['messageBody']}');
+    channelMessageList.add(docSnapshot.data());
+  }
+
+  print("Retrieved messages from database.");
+  return channelMessageList;
 }
 
 //this will grab multiple documents, such as when searching through messages
-getMsgDoc(collect, msg, compare)
+//NEEDS WORK
+//
+//CANNOT COMPLETE THIS WITHOUT THIRD PARTY SEARCH
+/*Future<List<Map<String, dynamic>>> searchMessages(String group,String channel, msg, compare) async {
+
+
+
+
+  List<Map<String,dynamic>> searchList = [];
+  var query = await db.collection('Groups').doc(group).collection('Channels').doc(channel).collection('Messages').get();
+  for (var docSnapshot in query.docs){
+    print('${docSnapshot.id} => ${docSnapshot.data()}');
+
+    searchList.add(docSnapshot.data());
+  }
+  for(var i in searchList){
+
+  }
+  return searchList;
+}*/
+
+//this fxn will update the pin status of a message
+//CONFIRM WORKS
+Future<void> pinMsg(String group, String channel, String message, bool pin) async
 {
-  db.collection(collect).where(msg.contains(compare)).get().then(
-      (res) => print("Success"),
-      onError: (e) => print ("Error getting messages: $e"),
-  );
+  final msgToPin = db
+      .collection('Groups')
+      .doc(group)
+      .collection('Channels')
+      .doc(channel)
+      .collection('Messages')
+      .doc(message);
+  await msgToPin
+    .update({"isPin": pin})
+    .onError((e, _) => print ("Error pinning document: $e"));
 }
 
-//this will grab a new message that has been sent to the database
-grabNewMsg(collect,msg)
-{
-  final newMsg = db.collection(collect).doc(msg);
-  newMsg.snapshots().listen(
-        (event) => print("current data: ${event.data()}"),
-    onError: (error) => print("Listen failed: $error"),
-  );
+//this fxn will grab a list of all pinned messages
+//CONFIRM WORKS
+Future<List<Map<String, dynamic>>> getPinnedMessages(String group, String channel) async {
+  List<Map<String,dynamic>> pinMessageList = [];
+  var query = await db.collection("Groups").doc(group).collection("Channels").doc(channel).collection("Messages").where("isPin",isEqualTo: true).get();
+  for (var docSnapshot in query.docs){
+    print('${docSnapshot.id} => ${docSnapshot.data()}');
+    pinMessageList.add(docSnapshot.data());
+
+  }
+  return pinMessageList;
 }
 
 //this is used to send new messages into the database using the current channel collection that we are in
-sendNewMsg(collect, String msg, String uID)
+//CONFIRM WORKS
+void sendNewMsg(String group, String channel, String msg, String uID)
 {
+  final timestamp = FieldValue.serverTimestamp();
+  final newMsg = db
+      .collection('Groups')
+      .doc(group)
+      .collection('Channels')
+      .doc(channel)
+      .collection('Messages')
+      .doc();
+   newMsg.set({
+        "messageBody": msg,
+        "time": timestamp,
+        "uID": uID,
+        "isPin": false,
+        "mID": newMsg.id
+        }).onError((e, _) => print("Error writing document $e"));
 
-  final newMsg ={
-    "messageBody": msg,
-    "time": FieldValue.serverTimestamp(),
-    "uID": uID
-  };
-
-  db
-    .collection(collect)
-    .doc()
-    .set(newMsg)
-    .onError((e, _) => print("Error writing document $e"));
 }

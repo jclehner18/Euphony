@@ -18,9 +18,10 @@ Future<void> userSetup(String displayName) async {
   FirebaseAuth auth = FirebaseAuth.instance;
   String email = auth.currentUser!.email.toString();
   String uid = auth.currentUser!.uid.toString();
-  FirebaseFirestore.instance.collection('Users').doc(email).set(
+  FirebaseFirestore.instance.collection('Users').doc(uid).set(
     {"email" : email, "username" : displayName, "uid" : uid}
   );
+  FirebaseFirestore.instance.collection('Users').doc(uid).collection('Settings').doc().set({'darkThemeOn': false});
 }
 
 
