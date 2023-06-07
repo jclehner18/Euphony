@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'Login1.dart';
+import '../Login1.dart';
 
 class PasswordSettings extends StatefulWidget {
   const PasswordSettings({super.key});

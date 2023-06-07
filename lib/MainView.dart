@@ -10,18 +10,20 @@ MainView.dart is the main screen users will interact with.
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:euphony/Login1.dart';
-import 'package:euphony/SettingsPage.dart';
+import 'package:euphony/Settings/SettingsPage.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:euphony/Login1.dart';
-import 'package:euphony/SettingsPage.dart';
+import 'package:euphony/Settings/SettingsPage.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:euphony/app_state.dart';
 import 'package:euphony/calendar.dart';
+import 'package:euphony/Settings/profileSettings.dart';
 
 
 // DEFINE CONSTANTS
@@ -37,7 +39,7 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   String _newChannelName = '';
   String _newGroupName = '';
-  
+
   void _onPressNewChannel() {
     showDialog(
       context: context,
@@ -122,10 +124,14 @@ class _MainViewState extends State<MainView> {
                   Align(alignment: Alignment.center, child: Text('Welcome ' + name, style: const TextStyle(fontSize: 20), textAlign: TextAlign.center,)),
                   ElevatedButton(
                       onPressed: () {
-                        /*
-                    print("Opened Settings Page);
-                    */
-                        Navigator.push(context, MaterialPageRoute(builder: ((context) => settingsPage())));
+                        
+                        //print("Opened Settings Page");
+                        debugPrintHitTestResults = true;
+                    
+                        //Navigator.push(context, MaterialPageRoute(builder: (context) => settingsPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return settingsPage();
+                        }));
                       },
                       child: const Icon(Icons.settings)
                   ),
@@ -135,7 +141,7 @@ class _MainViewState extends State<MainView> {
                     print("Logged Out");
                     */
                         FirebaseAuth.instance.signOut().then((value) {
-                          Navigator.push(context, MaterialPageRoute(builder: ((context) => LoginPage())));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
                         });
                       },
                       child: const Icon(Icons.logout_outlined)

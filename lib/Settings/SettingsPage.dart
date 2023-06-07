@@ -1,6 +1,7 @@
 import 'package:euphony/HomePage.dart';  
-import 'package:euphony/password.dart';
-import 'package:euphony/profileSettings.dart';
+import 'package:euphony/Settings/password.dart';
+import 'package:euphony/Settings/profPic.dart';
+import 'package:euphony/Settings/profileSettings.dart';
 import 'package:flutter/material.dart';
 
 class settingsPage extends StatefulWidget {
@@ -72,7 +73,7 @@ class _settingsPage extends State<settingsPage> {
   Widget buildPages() {
     switch (index) {
       case 0: 
-        return Placeholder(); //icon
+        return profPicture(); //icon
       case 1:
         return ProfileInfo(); //name
       case 2:

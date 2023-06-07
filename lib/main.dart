@@ -1,3 +1,4 @@
+import 'package:euphony/Settings/SettingsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'HomePage.dart';
@@ -104,6 +105,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //await Firebase.initializeApp(name: 'Euphony', options: const FirebaseOptions(apiKey: "AIzaSyBKNJATIkDLfvrU588uosdF54cBouQJ5Pw", appId: "1:361330243247:ios:efe2d58fe1523b46e4865a", messagingSenderId: "361330243247", projectId: "euphony-65e73",),);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  WidgetsFlutterBinding.ensureInitialized();
 
   runApp(MyApp());
 }
@@ -121,8 +123,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.deepPurple,
         ),
-        home: HomePage(),
+        //home: HomePage(),
         //home: MainView(),
+        home: LoginPage()
+        //home: settingsPage()
       ),
     );
   }

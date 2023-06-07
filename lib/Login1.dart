@@ -1,5 +1,5 @@
 import 'package:euphony/MainView.dart';
-import 'package:euphony/resetPassword.dart';
+import 'package:euphony/Settings/resetPassword.dart';
 import 'package:euphony/reusable_widgets/reusable_widget.dart';
 import 'package:euphony/SignUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -80,7 +80,8 @@ class LoginPage extends StatelessWidget {
                           FireBaseButton(context, "Login", () {
                             final newUser = FirebaseAuth.instance.signInWithEmailAndPassword(
                               email: _emailTextController.text, 
-                              password: _passwordTextController.text).catchError((err) {
+                              password: _passwordTextController.text)
+                              .catchError((err) {
                                 showDialog(
                                   context: context, 
                                   builder: (BuildContext context) {
@@ -97,10 +98,13 @@ class LoginPage extends StatelessWidget {
                                       ],
                                     );
                                   });
-                              }).then((value) => {
+                                  
+                              })
+                              .then((value) => {
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => MainView())),
                               });
-                              }
+                              
+                          }
                           )
                         ],)
                       ),
